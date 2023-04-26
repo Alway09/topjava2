@@ -7,9 +7,13 @@ import ru.javaops.topjava2.util.VoteUtil;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface VoteRepository extends BaseRepository<Vote> {
+    @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id AND v.dateTime >=:start_date_time AND v.dateTime <:end_date_time")
+    Optional<Vote> findUserVote(@Param("user_id") int userId, @Param("start_date_time") LocalDateTime startDateTime, @Param("end_date_time") LocalDateTime endDateTime);
+
     @Query("SELECT count(*) FROM Vote v WHERE v.restaurant.id=:restaurant_id AND v.dateTime >=:start_date_time AND v.dateTime <:end_date_time")
     long getVotesBetweenInclusive(@Param("restaurant_id") int restaurantId,
                                   @Param("start_date_time") LocalDateTime startDateTime,
