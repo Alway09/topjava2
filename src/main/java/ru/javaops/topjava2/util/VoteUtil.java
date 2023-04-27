@@ -24,8 +24,8 @@ public class VoteUtil {
 
     private static final Properties PROPERTIES;
 
-    public static final LocalTime VOTING_START_DEFAULT = LocalTime.of(0, 0);
-    public static final LocalTime VOTING_END_DEFAULT = LocalTime.of(11, 0);
+    private static final LocalTime VOTING_START_DEFAULT = LocalTime.of(0, 0);
+    private static final LocalTime VOTING_END_DEFAULT = LocalTime.of(11, 0);
 
     static {
         String votingTimePropsPath = "src/main/resources/voting_time.properties";
@@ -60,6 +60,14 @@ public class VoteUtil {
     public static boolean isVotingInProcess() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         return (currentDateTime.isAfter(votingStart())) && (currentDateTime.isBefore(votingEnd()));
+    }
+
+    public static void setVotingStart(LocalTime value) {
+        votingStart = value;
+    }
+
+    public static void setVotingEnd(LocalTime value) {
+        votingEnd = value;
     }
 
     // https://howtodoinjava.com/java8/java-stream-distinct-examples/

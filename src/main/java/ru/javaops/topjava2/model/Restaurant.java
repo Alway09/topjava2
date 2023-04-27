@@ -23,4 +23,9 @@ public class Restaurant extends NamedEntity implements HasId, Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     Menu menu;
+
+    public Restaurant(Integer id, String name, Menu menu){
+        super(id, name);
+        this.menu = menu;
+    }
 }
