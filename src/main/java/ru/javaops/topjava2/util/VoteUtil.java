@@ -45,7 +45,11 @@ public class VoteUtil {
     private static String setDefaultAndGetMessage() {
         votingStart = VOTING_START_DEFAULT;
         votingEnd = VOTING_END_DEFAULT;
-        return "Default values are exposed: start of voting=" + VOTING_START_DEFAULT.toString()
+        return getActualStartAndDateTimeMessage();
+    }
+
+    public static String getActualStartAndDateTimeMessage(){
+        return "Actual times now is: start of voting=" + VOTING_START_DEFAULT.toString()
                 + "; end of voting=" + VOTING_END_DEFAULT.toString();
     }
 

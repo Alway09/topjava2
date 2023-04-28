@@ -8,6 +8,7 @@ import ru.javaops.topjava2.HasId;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Entity
@@ -15,17 +16,17 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true)
 public class Restaurant extends NamedEntity implements HasId, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+    @OrderBy("name DESC")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    Menu menu;
+    List<Menu> menus;
 
-    public Restaurant(Integer id, String name, Menu menu){
+    public Restaurant(Integer id, String name, List<Menu> menus) {
         super(id, name);
-        this.menu = menu;
+        this.menus = menus;
     }
 }

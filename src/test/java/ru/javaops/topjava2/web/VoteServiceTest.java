@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javaops.topjava2.error.IllegalRequestDataException;
 import ru.javaops.topjava2.service.VoteService;
+import ru.javaops.topjava2.web.restaurant.RestaurantTestData;
 import ru.javaops.topjava2.web.user.UserTestData;
 
 import java.time.LocalTime;
@@ -31,7 +33,7 @@ public class VoteServiceTest {
     void successUpdate(){
         setVotingTimes(-1, 1);
         assertEquals(2, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
-        assertTrue(service.createOrUpdate(RestaurantTestData.RESTAURANT2));
+        service.createOrUpdate(RestaurantTestData.RESTAURANT2);
         assertEquals(1, service.getActualVotes(RestaurantTestData.RESTAURANT2_ID));
         assertEquals(1, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
     }
@@ -43,7 +45,7 @@ public class VoteServiceTest {
         setVotingTimes(-1, 1);
 
         assertEquals(2, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
-        assertTrue(service.createOrUpdate(RestaurantTestData.RESTAURANT1));
+        service.createOrUpdate(RestaurantTestData.RESTAURANT1);
         assertEquals(3, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
     }
 
@@ -52,7 +54,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void failureCreateOrUpdate(){
         setVotingTimes(-2, -1);
-        assertFalse(service.createOrUpdate(RestaurantTestData.RESTAURANT1));
+        assertThrows(IllegalRequestDataException.class, ()->service.createOrUpdate(RestaurantTestData.RESTAURANT1));
     }
 
     @Test

@@ -10,10 +10,15 @@ VALUES ('USER', 1),
        ('USER', 2),
        ('USER', 3);
 
-INSERT INTO MENU (name)
-VALUES ('Меню дня'),
-       ('Меню дня'),
-       ('Меню дня');
+INSERT INTO RESTAURANT (name)
+VALUES ('Сопка'),
+       ('Сациви'),
+       ('Густав и Густав');
+
+INSERT INTO MENU (name, restaurant_id)
+VALUES ('Меню дня', 1),
+      ('Меню дня', 2),
+      ('Меню дня', 3);
 
 INSERT INTO DISH (menu_id, name, price)
 VALUES (1, 'Голубцы', 250),
@@ -28,11 +33,6 @@ VALUES (1, 'Голубцы', 250),
        (3, 'Омлет', 150),
        (3, 'Брускеты с паштетом', 350),
        (3, 'Голубцы', 250);
-
-INSERT INTO RESTAURANT (name, menu_id)
-VALUES ('Сопка', 1),
-       ('Сациви', 2),
-       ('Густав и Густав', 3);
 
 INSERT INTO VOTE (user_id, restaurant_id, date_time)
 VALUES (1, 1, CURRENT_TIMESTAMP()),

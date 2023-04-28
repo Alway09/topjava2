@@ -7,23 +7,21 @@ import lombok.ToString;
 import lombok.Value;
 import ru.javaops.topjava2.model.Menu;
 
+import java.util.List;
+
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class RestaurantTo extends NamedTo {
     @NotBlank
-    Menu menu;
+    List<Menu> menus;
 
     @NotNull
-    Integer votesAmount;
+    Long votesAmount;
 
-    @NotNull
-    Boolean needToUpdate;
-
-    public RestaurantTo(Integer id, String name, Menu menu, Integer votesAmount, boolean needToUpdate) {
+    public RestaurantTo(Integer id, String name, List<Menu> menus, Long votesAmount) {
         super(id, name);
-        this.menu = menu;
+        this.menus = menus;
         this.votesAmount = votesAmount;
-        this.needToUpdate = needToUpdate;
     }
 }
