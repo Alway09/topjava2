@@ -29,7 +29,7 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(List.of(RESTAURANT1, RESTAURANT2))));
+                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(List.of(RESTAURANT2, RESTAURANT1))));
     }
 
     @Override

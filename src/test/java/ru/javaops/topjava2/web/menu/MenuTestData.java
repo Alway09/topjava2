@@ -2,10 +2,10 @@ package ru.javaops.topjava2.web.menu;
 
 import ru.javaops.topjava2.model.Dish;
 import ru.javaops.topjava2.model.Menu;
-import ru.javaops.topjava2.to.CreateMenuTo;
 import ru.javaops.topjava2.to.MenuTo;
 import ru.javaops.topjava2.web.MatcherFactory;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +25,14 @@ public class MenuTestData {
     public static final Dish NEW_DISH1 = new Dish("NewDish1", 130);
     public static final Dish NEW_DISH2 = new Dish("NewDish2", 230);
 
-    public static CreateMenuTo getNew() {
-        return new CreateMenuTo(null, "NewMenu", RESTAURANT1_ID, List.of(NEW_DISH1, NEW_DISH2));
+    public static MenuTo getNew() {
+        return new MenuTo(null, "NewMenu", RESTAURANT1_ID, List.of(NEW_DISH1, NEW_DISH2), LocalDate.now().plusDays(1));
     }
 
-    public static CreateMenuTo getUpdated() {
+    public static MenuTo getUpdated() {
         List<Dish> newDishes = new ArrayList<>();
         newDishes.add(MENU1.getDishes().get(0));
         newDishes.addAll(List.of(NEW_DISH1, NEW_DISH2));
-        return new CreateMenuTo(MENU1_ID, "UpdatedName", RESTAURANT1_ID, newDishes);
+        return new MenuTo(MENU1_ID, "UpdatedName", RESTAURANT1_ID, newDishes, null);
     }
 }

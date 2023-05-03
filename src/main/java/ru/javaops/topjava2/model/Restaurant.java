@@ -21,7 +21,7 @@ public class Restaurant extends NamedEntity implements HasId, Serializable {
     private static final long serialVersionUID = 1L;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
-    @OrderBy("name DESC")
+    @OrderBy("creationDate DESC, name ASC")
     @OnDelete(action = OnDeleteAction.CASCADE)
     List<Menu> menus;
 

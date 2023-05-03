@@ -16,12 +16,12 @@ public class MenuTo extends NamedTo {
 
     List<Dish> dishes;
 
-    LocalDate lastUpdate;
+    LocalDate creationDate;
 
-    public MenuTo(Integer id, String name, Integer restaurantId, List<Dish> dishes, LocalDate lastUpdate) {
+    public MenuTo(Integer id, String name, Integer restaurantId, List<Dish> dishes, LocalDate creationDate) {
         super(id, name);
         this.restaurantId = restaurantId;
         this.dishes = dishes;
-        this.lastUpdate = lastUpdate;
+        this.creationDate = creationDate;
     }
 }

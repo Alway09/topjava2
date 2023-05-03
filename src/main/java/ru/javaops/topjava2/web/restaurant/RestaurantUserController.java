@@ -25,13 +25,13 @@ public class RestaurantUserController extends AbstractRestaurantController {
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
             log.info("get restaurant with name={}", name);
-            var restaurant = repository.getByNameWithMenusUpdatedAtTheDate(name, LocalDate.now());
+            var restaurant = repository.getByNameWithMenusCreatedAtTheDate(name, LocalDate.now());
             return restaurant
                     .map(dbRestaurant -> List.of(createTo(dbRestaurant, voteService.getActualVotes(dbRestaurant.id()))))
                     .orElseGet(List::of);
         }
         log.info("get all restaurants with menus and votes");
-        return createTos(repository.getAllWithMenusUpdatedAtDate(LocalDate.now()),
+        return createTos(repository.getAllWithMenusCreatedAtDate(LocalDate.now()),
                 voteService.getActualVotesOfRestaurants());
     }
 
@@ -45,7 +45,7 @@ public class RestaurantUserController extends AbstractRestaurantController {
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
-        var restaurant = repository.getWithMenusUpdatedAtTheDate(id, LocalDate.now())
+        var restaurant = repository.getWithMenusCreatedAtTheDate(id, LocalDate.now())
                 .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
         return createTo(restaurant, voteService.getActualVotes(id));
     }

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "menu", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "restaurant_id"})})
+@Table(name = "menu", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "creation_date", "restaurant_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
 @Getter
@@ -35,20 +35,20 @@ public class Menu extends NamedEntity implements HasId, Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     List<Dish> dishes;
 
-    @Column(name = "last_update", nullable = false, columnDefinition = "date default now()")
-    private LocalDate lastUpdate;
+    @Column(name = "creation_date", nullable = false, columnDefinition = "date default now()")
+    private LocalDate creationDate;
 
-    public Menu(Integer id, String name, Restaurant restaurant, List<Dish> dishes, LocalDate lastUpdate) {
+    public Menu(Integer id, String name, Restaurant restaurant, List<Dish> dishes, LocalDate creationDate) {
         super(id, name);
         this.restaurant = restaurant;
         this.dishes = dishes;
-        this.lastUpdate = lastUpdate;
+        this.creationDate = creationDate;
     }
 
     public Menu(Menu menu) {
         super(menu.getId(), menu.getName());
         this.restaurant = menu.getRestaurant();
         this.dishes = menu.getDishes();
-        this.lastUpdate = menu.getLastUpdate();
+        this.creationDate = menu.getCreationDate();
     }
 }

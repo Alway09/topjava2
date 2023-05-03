@@ -28,7 +28,7 @@ public class RestaurantTestData {
 
         List<Menu> menusCopy = new ArrayList<>();
         for (Menu menu : restaurantCopy.getMenus()) {
-            menusCopy.add(new Menu(menu.getId(), menu.getName(), null, menu.getDishes(), menu.getLastUpdate()));
+            menusCopy.add(new Menu(menu.getId(), menu.getName(), null, menu.getDishes(), menu.getCreationDate()));
         }
 
         restaurantCopy.setMenus(menusCopy);

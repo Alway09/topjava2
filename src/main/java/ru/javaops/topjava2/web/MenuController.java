@@ -11,7 +11,6 @@ import ru.javaops.topjava2.model.Menu;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.repository.MenuRepository;
 import ru.javaops.topjava2.repository.RestaurantRepository;
-import ru.javaops.topjava2.to.CreateMenuTo;
 import ru.javaops.topjava2.to.MenuTo;
 
 import java.net.URI;
@@ -52,17 +51,18 @@ public class MenuController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable int id, @RequestBody CreateMenuTo menuTo) {
+    public void update(@PathVariable int id, @RequestBody MenuTo menuTo) {
         log.info("update menu id={}", id);
         assureIdConsistent(menuTo, id);
         Menu menu = createFromTo(menuTo);
         Menu actual = repository.getExisted(id);
         menu.setRestaurant(actual.getRestaurant());
+        menu.setCreationDate(actual.getCreationDate());
         repository.save(menu);
     }
 
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createWithLocation(@RequestBody CreateMenuTo menuTo) {
+    public ResponseEntity<String> createWithLocation(@RequestBody MenuTo menuTo) {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());
         checkNew(menuTo);
         Menu created = repository.save(createFromTo(menuTo));

@@ -7,7 +7,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javaops.topjava2.repository.MenuRepository;
-import ru.javaops.topjava2.to.CreateMenuTo;
+import ru.javaops.topjava2.to.MenuTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 import ru.javaops.topjava2.web.MenuController;
@@ -35,7 +35,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createWithLocation() throws Exception {
-        CreateMenuTo newMenu = getNew();
+        MenuTo newMenu = getNew();
         create(newMenu, status().isCreated());
 
         newMenu.setId(MENU_NEW_ID);
@@ -56,10 +56,10 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdated())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(containsString("CreateMenuTo must be new (id=null)")));
+                .andExpect(content().string(containsString("MenuTo must be new (id=null)")));
     }
 
-    private void create(CreateMenuTo menuTo, ResultMatcher result) throws Exception {
+    private void create(MenuTo menuTo, ResultMatcher result) throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(menuTo)))
@@ -101,14 +101,14 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
-        CreateMenuTo updated = getUpdated();
+        MenuTo updated = getUpdated();
         update(updated, status().isNoContent());
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void updateNotFound() throws Exception {
-        CreateMenuTo updated = getUpdated();
+        MenuTo updated = getUpdated();
         updated.setId(NOT_FOUND);
         perform(MockMvcRequestBuilders.put(REST_URL + NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +124,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         update(getUpdated(), status().isForbidden());
     }
 
-    private void update(CreateMenuTo menuTo, ResultMatcher result) throws Exception {
+    private void update(MenuTo menuTo, ResultMatcher result) throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(menuTo)))
