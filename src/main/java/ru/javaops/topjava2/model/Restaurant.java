@@ -29,4 +29,9 @@ public class Restaurant extends NamedEntity implements HasId, Serializable {
         super(id, name);
         this.menus = menus;
     }
+
+    public Restaurant(Restaurant restaurant) {
+        super(restaurant.getId(), restaurant.getName());
+        this.menus = restaurant.getMenus();
+    }
 }

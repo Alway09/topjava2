@@ -22,17 +22,20 @@ public class Menu extends NamedEntity implements HasId, Serializable {
     private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JoinColumn(name = "restaurant_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Restaurant restaurant;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
+    @ElementCollection(targetClass = Dish.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "dish", joinColumns = @JoinColumn(name = "menu_id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"menu_id", "name"}, name = "uk_menu_id_name")})
     @OrderBy("name ASC")
+    @JoinColumn
     @OnDelete(action = OnDeleteAction.CASCADE)
     List<Dish> dishes;
 
-    @Column(name = "last_update", nullable = false, columnDefinition = "timestamp default now()")
+    @Column(name = "last_update", nullable = false, columnDefinition = "date default now()")
     private LocalDate lastUpdate;
 
     public Menu(Integer id, String name, Restaurant restaurant, List<Dish> dishes, LocalDate lastUpdate) {
@@ -40,5 +43,12 @@ public class Menu extends NamedEntity implements HasId, Serializable {
         this.restaurant = restaurant;
         this.dishes = dishes;
         this.lastUpdate = lastUpdate;
+    }
+
+    public Menu(Menu menu) {
+        super(menu.getId(), menu.getName());
+        this.restaurant = menu.getRestaurant();
+        this.dishes = menu.getDishes();
+        this.lastUpdate = menu.getLastUpdate();
     }
 }

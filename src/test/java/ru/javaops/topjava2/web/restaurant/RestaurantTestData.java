@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.javaops.topjava2.util.RestaurantUtil.createTo;
-import static ru.javaops.topjava2.web.MenuTestData.*;
+import static ru.javaops.topjava2.web.TestData.RESTAURANT1;
 
 public class RestaurantTestData {
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingEqualsComparator(Restaurant.class);
@@ -22,28 +22,17 @@ public class RestaurantTestData {
     public static final int RESTAURANT3_ID = 3;
     public static final int RESTAURANT_NEW_ID = 4;
     public static final int NOT_FOUND = 20;
-    public static final String NOT_FOUND_EXCEPTION_MESSAGE = "Entity with id=20 not found";
-
-    public static final Restaurant RESTAURANT1 = new Restaurant(RESTAURANT1_ID, "Сопка", null);
-    public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Сациви", null);
-    public static final Restaurant RESTAURANT3 = new Restaurant(RESTAURANT3_ID, "Густав и Густав", null);
-    public static final List<Restaurant> RESTAURANTS = List.of(RESTAURANT1, RESTAURANT2, RESTAURANT3);
-
-    static {
-        RESTAURANT1.setMenus(List.of(MENU1));
-        RESTAURANT2.setMenus(List.of(MENU2));
-        RESTAURANT3.setMenus(List.of(MENU3));
-    }
 
     public static RestaurantTo getTo(Restaurant restaurant) {
-        RestaurantTo restaurantTo = createTo(restaurant, 0L);
-        for (Menu menu : restaurantTo.getMenus()) {
-            for (Dish dish : menu.getDishes()) {
-                dish.setMenu(null);
-            }
-            menu.setRestaurant(null);
+        Restaurant restaurantCopy = new Restaurant(restaurant);
+
+        List<Menu> menusCopy = new ArrayList<>();
+        for (Menu menu : restaurantCopy.getMenus()) {
+            menusCopy.add(new Menu(menu.getId(), menu.getName(), null, menu.getDishes(), menu.getLastUpdate()));
         }
-        return restaurantTo;
+
+        restaurantCopy.setMenus(menusCopy);
+        return createTo(restaurantCopy, 0L);
     }
 
     public static List<RestaurantTo> getTos(List<Restaurant> restaurants) {

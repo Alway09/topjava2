@@ -17,8 +17,10 @@ VALUES ('Сопка'),
 
 INSERT INTO MENU (name, restaurant_id)
 VALUES ('Меню дня', 1),
-      ('Меню дня', 2),
-      ('Меню дня', 3);
+       ('Меню дня', 2);
+
+INSERT INTO MENU (name, restaurant_id, last_update)
+VALUES ('Меню дня', 3, '2023-01-01');
 
 INSERT INTO DISH (menu_id, name, price)
 VALUES (1, 'Голубцы', 250),

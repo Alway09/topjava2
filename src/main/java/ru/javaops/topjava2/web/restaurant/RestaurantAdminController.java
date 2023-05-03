@@ -7,16 +7,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
+import ru.javaops.topjava2.to.CreateRestaurantTo;
 import ru.javaops.topjava2.to.RestaurantTo;
 
 import java.net.URI;
 import java.util.List;
 
+import static ru.javaops.topjava2.util.RestaurantUtil.*;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 
-//TODO: cashing
+// TODO: cashing
 @RestController
 @RequestMapping(value = RestaurantAdminController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -26,7 +29,16 @@ public class RestaurantAdminController extends AbstractRestaurantController {
     @Override
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
-        return super.getAllOrByName(name);
+        if (name != null) {
+            log.info("get restaurant by name={}", name);
+            var restaurant = repository.getByNameWithMenus(name);
+            return restaurant
+                    .map(dbRestaurant -> List.of(createTo(dbRestaurant, voteService.getActualVotes(dbRestaurant.id()))))
+                    .orElseGet(List::of);
+        }
+        log.info("get all restaurants with menu and votes");
+        return createTos(repository.getAllWithMenus(),
+                voteService.getActualVotesOfRestaurants());
     }
 
     @Override
@@ -38,7 +50,9 @@ public class RestaurantAdminController extends AbstractRestaurantController {
     @Override
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
-        return super.get(id);
+        log.info("get restaurant id={}", id);
+        var restaurant = repository.getWithMenus(id).orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
+        return createTo(restaurant, voteService.getActualVotes(id));
     }
 
     @DeleteMapping("/{id}")
@@ -49,10 +63,10 @@ public class RestaurantAdminController extends AbstractRestaurantController {
     }
 
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createWithLocation(@RequestBody Restaurant restaurant) {
-        log.info("create restaurant {}", restaurant);
-        checkNew(restaurant);
-        Restaurant created = repository.save(restaurant);
+    public ResponseEntity<String> createWithLocation(@RequestBody CreateRestaurantTo restaurantTo) {
+        log.info("create restaurant {}", restaurantTo);
+        checkNew(restaurantTo);
+        Restaurant created = repository.save(createFromTo(restaurantTo));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -61,11 +75,12 @@ public class RestaurantAdminController extends AbstractRestaurantController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Restaurant restaurant, @PathVariable int id) {
+    public void update(@RequestBody CreateRestaurantTo restaurantTo, @PathVariable int id) {
         log.info("update restaurant id={}", id);
-        assureIdConsistent(restaurant, id);
-        repository.getExisted(id);
-        repository.save(restaurant);
+        assureIdConsistent(restaurantTo, id);
+        Restaurant updated = repository.getExisted(id);
+        updated.setName(restaurantTo.getName());
+        repository.save(updated);
     }
 
     @Override

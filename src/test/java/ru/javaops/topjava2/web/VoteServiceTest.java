@@ -16,6 +16,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.javaops.topjava2.util.VoteUtil.setVotingEnd;
 import static ru.javaops.topjava2.util.VoteUtil.setVotingStart;
+import static ru.javaops.topjava2.web.TestData.RESTAURANT1;
+import static ru.javaops.topjava2.web.TestData.RESTAURANT2;
 
 @SpringBootTest
 public class VoteServiceTest {
@@ -33,7 +35,7 @@ public class VoteServiceTest {
     void successUpdate(){
         setVotingTimes(-1, 1);
         assertEquals(2, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
-        service.createOrUpdate(RestaurantTestData.RESTAURANT2);
+        service.createOrUpdate(RESTAURANT2);
         assertEquals(1, service.getActualVotes(RestaurantTestData.RESTAURANT2_ID));
         assertEquals(1, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
     }
@@ -45,7 +47,7 @@ public class VoteServiceTest {
         setVotingTimes(-1, 1);
 
         assertEquals(2, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
-        service.createOrUpdate(RestaurantTestData.RESTAURANT1);
+        service.createOrUpdate(RESTAURANT1);
         assertEquals(3, service.getActualVotes(RestaurantTestData.RESTAURANT1_ID));
     }
 
@@ -54,7 +56,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void failureCreateOrUpdate(){
         setVotingTimes(-2, -1);
-        assertThrows(IllegalRequestDataException.class, ()->service.createOrUpdate(RestaurantTestData.RESTAURANT1));
+        assertThrows(IllegalRequestDataException.class, ()->service.createOrUpdate(RESTAURANT1));
     }
 
     @Test
@@ -81,7 +83,7 @@ public class VoteServiceTest {
         Map<Integer, Long> votes = service.getVotesOfAllRestaurants();
         assertEquals(2, votes.get(RestaurantTestData.RESTAURANT1_ID));
         assertEquals(0, votes.getOrDefault(RestaurantTestData.RESTAURANT2_ID, 0L));
-        service.createOrUpdate(RestaurantTestData.RESTAURANT2);
+        service.createOrUpdate(RESTAURANT2);
 
         setVotingTimes(-2, -1);
         votes = service.getVotesOfAllRestaurants();
@@ -97,7 +99,7 @@ public class VoteServiceTest {
         Map<Integer, Long> votes = service.getActualVotesOfRestaurants();
         assertEquals(2, votes.get(RestaurantTestData.RESTAURANT1_ID));
         assertEquals(0, votes.getOrDefault(RestaurantTestData.RESTAURANT2_ID, 0L));
-        service.createOrUpdate(RestaurantTestData.RESTAURANT2);
+        service.createOrUpdate(RESTAURANT2);
 
         votes = service.getActualVotesOfRestaurants();
         assertEquals(1, votes.get(RestaurantTestData.RESTAURANT1_ID));

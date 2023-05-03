@@ -1,7 +1,6 @@
 package ru.javaops.topjava2.web.restaurant;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javaops.topjava2.service.VoteService;
@@ -15,6 +14,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.*;
 
 public abstract class AbstractRestaurantControllerTest extends AbstractControllerTest {
@@ -25,13 +25,13 @@ public abstract class AbstractRestaurantControllerTest extends AbstractControlle
     }
 
     @Test
-    void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(RESTAURANTS)));
-    }
+    abstract void getAll() throws Exception;
+
+    @Test
+    abstract void getByName() throws Exception;
+
+    @Test
+    abstract void get() throws Exception;
 
     @Test
     void getList() throws Exception {
@@ -39,12 +39,7 @@ public abstract class AbstractRestaurantControllerTest extends AbstractControlle
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(RESTAURANTS));
-    }
-
-    @Test
-    void getByName() throws Exception {
-        getByName(RESTAURANT1.getName(), List.of(getTo(RESTAURANT1)));
+                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT1, RESTAURANT2, RESTAURANT3)));
     }
 
     @Test
@@ -52,21 +47,12 @@ public abstract class AbstractRestaurantControllerTest extends AbstractControlle
         getByName("NotExist", List.of());
     }
 
-    void getByName(String name, List<RestaurantTo> expect) throws Exception {
+    protected void getByName(String name, List<RestaurantTo> expect) throws Exception {
         perform(MockMvcRequestBuilders.get(restURL).param("name", name))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(expect));
-    }
-
-    @Test
-    void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTo(RESTAURANT1)));
     }
 
     @Test
