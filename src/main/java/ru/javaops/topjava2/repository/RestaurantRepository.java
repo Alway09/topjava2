@@ -26,6 +26,9 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.creationDate=:creation_date")
     List<Restaurant> getAllWithMenusCreatedAtDate(@Param("creation_date") LocalDate creationDate);
 
+    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.creationDate=:creation_date ORDER BY r.name")
+    List<Restaurant> getListWithMenusCreatedAtDate(@Param("creation_date") LocalDate creationDate);
+
     @EntityGraph(attributePaths = "menus")
     @Query("SELECT r FROM Restaurant r WHERE r.name=:name")
     Optional<Restaurant> getByNameWithMenus(@Param("name") String name);

@@ -20,7 +20,6 @@ import static ru.javaops.topjava2.util.RestaurantUtil.createTos;
 public class RestaurantUserController extends AbstractRestaurantController {
     public static final String REST_URL = "/api/user/restaurants";
 
-    @Override
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
@@ -35,13 +34,12 @@ public class RestaurantUserController extends AbstractRestaurantController {
                 voteService.getActualVotesOfRestaurants());
     }
 
-    @Override
     @GetMapping("/list")
     public List<Restaurant> getList() {
-        return super.getList();
+        log.info("get all restaurants");
+        return repository.getListWithMenusCreatedAtDate(LocalDate.now());
     }
 
-    @Override
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);

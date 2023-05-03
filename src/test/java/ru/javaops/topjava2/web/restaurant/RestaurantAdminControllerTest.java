@@ -23,7 +23,6 @@ import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.getUpdated;
 import static ru.javaops.topjava2.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 
-@WithUserDetails(value = ADMIN_MAIL)
 public class RestaurantAdminControllerTest extends AbstractRestaurantControllerTest {
     @Autowired
     RestaurantRepository repository;
@@ -34,6 +33,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
 
     // ===============================CREATE===============================
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void createWithLocation() throws Exception {
         Restaurant newRestaurant = getNew();
         create(newRestaurant, status().isCreated());
@@ -49,6 +49,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void createNotNew() throws Exception {
         perform(MockMvcRequestBuilders.post(restURL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,8 +68,8 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     // ===============================READ===============================
-    @Override
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(restURL))
                 .andDo(print())
@@ -77,8 +78,18 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
                 .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(List.of(RESTAURANT3, RESTAURANT2, RESTAURANT1))));
     }
 
-    @Override
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getList() throws Exception {
+        perform(MockMvcRequestBuilders.get(restURL + "/list"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT1, RESTAURANT2, RESTAURANT3)));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(restURL + RESTAURANT3_ID))
                 .andDo(print())
@@ -87,14 +98,37 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
                 .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTo(RESTAURANT3)));
     }
 
-    @Override
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getNotFound() throws Exception {
+        perform(MockMvcRequestBuilders.get(restURL + NOT_FOUND))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void getByName() throws Exception {
         getByName(RESTAURANT3.getName(), List.of(getTo(RESTAURANT3)));
     }
 
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getByName_notExisted() throws Exception {
+        getByName("NotExist", List.of());
+    }
+
+    @Test
+    void getUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     // ===============================UPDATE===============================
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Restaurant updated = getUpdated();
         update(updated, status().isNoContent());
@@ -107,6 +141,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void updateNotFound() throws Exception {
         Restaurant updated = getUpdated();
         updated.setId(NOT_FOUND);
@@ -134,6 +169,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
 
     // ===============================DELETE===============================
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(restURL + RESTAURANT2_ID))
                 .andDo(print())
@@ -142,6 +178,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
     void deleteNotFound() throws Exception {
         perform(MockMvcRequestBuilders.delete(restURL + NOT_FOUND))
                 .andDo(print())
@@ -155,5 +192,13 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
         perform(MockMvcRequestBuilders.delete(restURL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isForbidden());
+    }
+
+    // ===============================VOTE===============================
+    @Override
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void vote() throws Exception {
+        super.vote();
     }
 }

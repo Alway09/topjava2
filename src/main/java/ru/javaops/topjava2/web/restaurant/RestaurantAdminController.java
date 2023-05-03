@@ -1,6 +1,7 @@
 package ru.javaops.topjava2.web.restaurant;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,6 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 public class RestaurantAdminController extends AbstractRestaurantController {
     public static final String REST_URL = "/api/admin/restaurants";
 
-    @Override
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
@@ -41,13 +41,12 @@ public class RestaurantAdminController extends AbstractRestaurantController {
                 voteService.getActualVotesOfRestaurants());
     }
 
-    @Override
     @GetMapping("/list")
     public List<Restaurant> getList() {
-        return super.getList();
+        log.info("get all restaurants");
+        return repository.findAll(Sort.by(Sort.Direction.DESC, "name"));
     }
 
-    @Override
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
