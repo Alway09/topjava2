@@ -3,6 +3,7 @@ package ru.javaops.topjava2.web.restaurant;
 import ru.javaops.topjava2.model.Dish;
 import ru.javaops.topjava2.model.Menu;
 import ru.javaops.topjava2.model.Restaurant;
+import ru.javaops.topjava2.to.CreateRestaurantTo;
 import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.web.MatcherFactory;
 
@@ -51,5 +52,9 @@ public class RestaurantTestData {
         Restaurant updated = new Restaurant(RESTAURANT1_ID, RESTAURANT1.getName(), null);
         updated.setName("UpdatedName");
         return updated;
+    }
+
+    public static CreateRestaurantTo getInvalid(){
+        return new CreateRestaurantTo(null, null);
     }
 }

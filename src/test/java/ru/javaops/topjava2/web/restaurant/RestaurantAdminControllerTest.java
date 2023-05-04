@@ -59,6 +59,17 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("CreateRestaurantTo must be new (id=null)")));
     }
 
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createInvalid() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getInvalid())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"name\":\"must not be blank\"")));
+    }
+
     private void create(Restaurant restaurant, ResultMatcher result) throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)

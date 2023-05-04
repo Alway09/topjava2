@@ -1,5 +1,6 @@
 package ru.javaops.topjava2.web.restaurant;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -69,7 +70,7 @@ public class RestaurantAdminController {
     }
 
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createWithLocation(@RequestBody CreateRestaurantTo restaurantTo) {
+    public ResponseEntity<String> createWithLocation(@Valid @RequestBody CreateRestaurantTo restaurantTo) {
         log.info("create restaurant {}", restaurantTo);
         checkNew(restaurantTo);
         Restaurant created = repository.save(createFromTo(restaurantTo));
@@ -81,7 +82,7 @@ public class RestaurantAdminController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody CreateRestaurantTo restaurantTo, @PathVariable int id) {
+    public void update(@Valid @RequestBody CreateRestaurantTo restaurantTo, @PathVariable int id) {
         log.info("update restaurant id={}", id);
         assureIdConsistent(restaurantTo, id);
         Restaurant updated = repository.getExisted(id);
