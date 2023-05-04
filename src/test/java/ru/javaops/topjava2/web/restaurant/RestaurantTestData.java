@@ -1,6 +1,5 @@
 package ru.javaops.topjava2.web.restaurant;
 
-import ru.javaops.topjava2.model.Dish;
 import ru.javaops.topjava2.model.Menu;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.to.CreateRestaurantTo;
@@ -54,7 +53,13 @@ public class RestaurantTestData {
         return updated;
     }
 
-    public static CreateRestaurantTo getInvalid(){
+    public static Restaurant getUpdatedInvalid() {
+        Restaurant updated = new Restaurant(RESTAURANT1_ID, RESTAURANT1.getName(), null);
+        updated.setName(null);
+        return updated;
+    }
+
+    public static CreateRestaurantTo getNewInvalid() {
         return new CreateRestaurantTo(null, null);
     }
 }

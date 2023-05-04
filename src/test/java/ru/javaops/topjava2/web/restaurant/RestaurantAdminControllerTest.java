@@ -64,7 +64,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
     void createInvalid() throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(getInvalid())))
+                .content(JsonUtil.writeValue(getNewInvalid())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("\"name\":\"must not be blank\"")));
@@ -176,6 +176,17 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = USER_MAIL)
     void updateUserAuth() throws Exception {
         update(getUpdated(), status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void updateInvalid() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedInvalid())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"name\":\"must not be blank\"")));
     }
 
     private void update(Restaurant restaurant, ResultMatcher result) throws Exception {
