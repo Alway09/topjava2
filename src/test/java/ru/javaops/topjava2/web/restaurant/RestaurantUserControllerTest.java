@@ -93,11 +93,4 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
-
-    @Override
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void vote() throws Exception {
-        super.vote();
-    }
 }

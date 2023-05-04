@@ -193,12 +193,4 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
-
-    // ===============================VOTE===============================
-    @Override
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void vote() throws Exception {
-        super.vote();
-    }
 }

@@ -97,6 +97,13 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
     }
 
+    @Test
+    void getUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + MENU1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     // ===============================UPDATE===============================
     @Test
     @WithUserDetails(value = ADMIN_MAIL)

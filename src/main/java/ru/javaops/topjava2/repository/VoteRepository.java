@@ -6,39 +6,32 @@ import ru.javaops.topjava2.model.Vote;
 import ru.javaops.topjava2.util.VoteUtil;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id AND v.dateTime >=:start_date_time AND v.dateTime <:end_date_time")
     Optional<Vote> findUserVote(@Param("user_id") int userId, @Param("start_date_time") LocalDateTime startDateTime, @Param("end_date_time") LocalDateTime endDateTime);
 
     @Query("SELECT count(*) FROM Vote v WHERE v.restaurant.id=:restaurant_id AND v.dateTime >=:start_date_time AND v.dateTime <:end_date_time")
-    long getVotesBetweenInclusive(@Param("restaurant_id") int restaurantId,
-                                  @Param("start_date_time") LocalDateTime startDateTime,
-                                  @Param("end_date_time") LocalDateTime endDateTime);
+    long getVotesAmountBetweenInclusive(@Param("restaurant_id") int restaurantId,
+                                        @Param("start_date_time") LocalDateTime startDateTime,
+                                        @Param("end_date_time") LocalDateTime endDateTime);
 
-    @Query("SELECT count(*) FROM Vote v WHERE v.restaurant.id=:restaurant_id")
-    long getVotes(@Param("restaurant_id") int restaurantId);
+    @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id")
+    List<Vote> getAllUserVotes(@Param("user_id") int userId);
 
-    //key - restaurant_id, value - amount of votes for restaurant with id=restaurant_id
-    default Map<Integer, Long> getVotesOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime,
-                                                                        LocalDateTime endDateTime) {
-        return getFilteredVotes()
-                .collect(Collectors.toMap(vote -> vote.getRestaurant().getId(),
-                        vote -> getVotesBetweenInclusive(vote.getRestaurant().getId(), startDateTime, endDateTime)));
-    }
+    @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id AND v.restaurant.id=:restaurant_id")
+    List<Vote> getAllUserVotesForRestaurant(@Param("user_id") int userId, @Param("restaurant_id") int restaurantId);
 
-    default Map<Integer, Long> getVotesOfAllRestaurants() {
-        return getFilteredVotes()
-                .collect(Collectors.toMap(vote -> vote.getRestaurant().getId(),
-                        vote -> getVotes(vote.getRestaurant().getId())));
-    }
-
-    private Stream<Vote> getFilteredVotes() {
+    // return: key - restaurant_id, value - amount of votes for restaurant with id=restaurant_id
+    default Map<Integer, Long> getVotesAmountOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime,
+                                                                              LocalDateTime endDateTime) {
         return findAll().stream()
-                .filter(VoteUtil.distinctByKey(vote -> vote.getRestaurant().getId()));
+                .filter(VoteUtil.distinctByKey(vote -> vote.getRestaurant().getId()))
+                .collect(Collectors.toMap(vote -> vote.getRestaurant().getId(),
+                        vote -> getVotesAmountBetweenInclusive(vote.getRestaurant().getId(), startDateTime, endDateTime)));
     }
 }

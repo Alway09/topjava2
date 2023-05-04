@@ -2,6 +2,9 @@ package ru.javaops.topjava2.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import ru.javaops.topjava2.model.Vote;
+import ru.javaops.topjava2.to.VoteAmountTo;
+import ru.javaops.topjava2.to.VoteTo;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,8 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -48,7 +50,7 @@ public class VoteUtil {
         return getActualStartAndDateTimeMessage();
     }
 
-    public static String getActualStartAndDateTimeMessage(){
+    public static String getActualStartAndDateTimeMessage() {
         return "Actual times now is: start of voting=" + VOTING_START_DEFAULT.toString()
                 + "; end of voting=" + VOTING_END_DEFAULT.toString();
     }
@@ -78,5 +80,27 @@ public class VoteUtil {
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> map = new ConcurrentHashMap<>();
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+    public static VoteTo createTo(Vote vote) {
+        return new VoteTo(vote.getId(), vote.getRestaurant().getId(), vote.getDateTime());
+    }
+
+    public static List<VoteTo> createTos(Iterable<Vote> votes) {
+        List<VoteTo> voteTos = new ArrayList<>();
+        for (Vote vote : votes) {
+            voteTos.add(createTo(vote));
+        }
+        voteTos.sort(Comparator.comparing(VoteTo::getDateTime).reversed());
+        return voteTos;
+    }
+
+    public static List<VoteAmountTo> createTos(Map<Integer, Long> votes) {
+        List<VoteAmountTo> voteAmountTos = new ArrayList<>();
+        for (Integer restaurantId : votes.keySet()) {
+            voteAmountTos.add(new VoteAmountTo(restaurantId, votes.getOrDefault(restaurantId, 0L)));
+        }
+        voteAmountTos.sort(Comparator.comparing(VoteAmountTo::getVotesAmount).reversed());
+        return voteAmountTos;
     }
 }

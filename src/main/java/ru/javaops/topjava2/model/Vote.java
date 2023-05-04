@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ToString(callSuper = true)
 public class Vote extends BaseEntity implements HasId, Serializable {
     @Serial
@@ -38,4 +37,11 @@ public class Vote extends BaseEntity implements HasId, Serializable {
 
     @Column(name = "date_time", nullable = false)
     LocalDateTime dateTime;
+
+    public Vote(Integer id, User user, Restaurant restaurant, LocalDateTime dateTime) {
+        super(id);
+        this.user = user;
+        this.restaurant = restaurant;
+        this.dateTime = dateTime;
+    }
 }
