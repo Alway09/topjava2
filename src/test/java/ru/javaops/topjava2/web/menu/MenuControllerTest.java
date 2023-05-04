@@ -59,6 +59,36 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("MenuTo must be new (id=null)")));
     }
 
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createInvalid() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getNewInvalid1())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"restaurantId\":\"must not be null\"")))
+                .andExpect(content().string(containsString("\"dishes\":\"must not be null\"")))
+                .andExpect(content().string(containsString("\"name\":\"must not be blank\"")));
+
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getNewInvalid2())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"restaurantId\":\"must be greater than or equal to 1\"")))
+                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")));
+
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getNewInvalid3())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"restaurantId\":\"must be greater than or equal to 1\"")))
+                .andExpect(content().string(containsString("\"dishes[0].name\":\"must not be blank\"")))
+                .andExpect(content().string(containsString("\"dishes[0].price\":\"must be greater than or equal to 0\"")));
+    }
+
     private void create(MenuTo menuTo, ResultMatcher result) throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,6 +159,34 @@ public class MenuControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = USER_MAIL)
     void updateUserAuth() throws Exception {
         update(getUpdated(), status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void updateInvalid() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedInvalid1())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"dishes\":\"must not be null\"")))
+                .andExpect(content().string(containsString("\"name\":\"must not be blank\"")));
+
+        perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedInvalid2())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"dishes[0].name\":\"must not be blank\"")))
+                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")));
+
+        perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedInvalid3())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("\"dishes[0].name\":\"must not be blank\"")))
+                .andExpect(content().string(containsString("\"dishes[0].price\":\"must be greater than or equal to 0\"")));
     }
 
     private void update(MenuTo menuTo, ResultMatcher result) throws Exception {

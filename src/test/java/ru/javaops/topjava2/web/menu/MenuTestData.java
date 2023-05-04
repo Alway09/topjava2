@@ -35,4 +35,28 @@ public class MenuTestData {
         newDishes.addAll(List.of(NEW_DISH1, NEW_DISH2));
         return new MenuTo(MENU1_ID, "UpdatedName", RESTAURANT1_ID, newDishes, null);
     }
+
+    public static MenuTo getNewInvalid1() {
+        return new MenuTo(null, null, null, null, null);
+    }
+
+    public static MenuTo getNewInvalid2() {
+        return new MenuTo(null, "", -1, List.of(new Dish("DishName", 1)), LocalDate.now().minusDays(100));
+    }
+
+    public static MenuTo getNewInvalid3() {
+        return new MenuTo(null, "NewName", 0, List.of(new Dish("", -1)), LocalDate.now().plusDays(100));
+    }
+
+    public static MenuTo getUpdatedInvalid1() {
+        return new MenuTo(MENU1_ID, null, RESTAURANT1_ID, null, null);
+    }
+
+    public static MenuTo getUpdatedInvalid2() {
+        return new MenuTo(MENU1_ID, "A", RESTAURANT1_ID, List.of(new Dish(null, null)), LocalDate.now().minusDays(100));
+    }
+
+    public static MenuTo getUpdatedInvalid3() {
+        return new MenuTo(MENU1_ID, "NewName", RESTAURANT1_ID, List.of(new Dish("", -1)), LocalDate.now().plusDays(100));
+    }
 }

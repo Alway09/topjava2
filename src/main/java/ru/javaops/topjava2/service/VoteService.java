@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNullElse;
 import static ru.javaops.topjava2.util.VoteUtil.*;
 import static ru.javaops.topjava2.web.AuthUser.authId;
 import static ru.javaops.topjava2.web.AuthUser.authUser;
@@ -51,15 +52,15 @@ public class VoteService {
     }
 
     public long getVotesAmountBetweenInclusive(int restaurantId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        startDateTime = startDateTime == null ? MIN_DATE_TIME : startDateTime;
-        endDateTime = endDateTime == null ? MAX_DATE_TIME : endDateTime;
+        startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
+        endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
         log.info("get votes amount for restaurant id={} for user id={} between {} and {}", restaurantId, authId(), startDateTime, endDateTime);
         return repository.getVotesAmountBetweenInclusive(restaurantId, startDateTime, endDateTime);
     }
 
     public Map<Integer, Long> getVotesAmountOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        startDateTime = startDateTime == null ? MIN_DATE_TIME : startDateTime;
-        endDateTime = endDateTime == null ? MAX_DATE_TIME : endDateTime;
+        startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
+        endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
         log.info("get votes amount for all restaurants for user id={} between {} and {}", authId(), startDateTime, endDateTime);
         return repository.getVotesAmountOfAllRestaurantsBetweenInclusive(startDateTime, endDateTime);
     }
