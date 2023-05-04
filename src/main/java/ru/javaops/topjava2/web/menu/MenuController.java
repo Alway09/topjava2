@@ -1,11 +1,13 @@
-package ru.javaops.topjava2.web;
+package ru.javaops.topjava2.web.menu;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Menu;
@@ -30,8 +32,14 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 public class MenuController {
     MenuRepository repository;
     RestaurantRepository restaurantRepository;
+    CreationDateValidator creationDateValidator;
 
     public static final String REST_URL = "/api/admin/menu";
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(creationDateValidator);
+    }
 
     @GetMapping("/")
     public List<MenuTo> getAll() {

@@ -10,7 +10,6 @@ import ru.javaops.topjava2.repository.MenuRepository;
 import ru.javaops.topjava2.to.MenuTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
-import ru.javaops.topjava2.web.MenuController;
 
 import java.util.List;
 
@@ -77,7 +76,8 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("\"restaurantId\":\"must be greater than or equal to 1\"")))
-                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")));
+                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")))
+                .andExpect(content().string(containsString("\"creationDate\":\"Creation date must be current or in future\"")));
 
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -178,7 +178,8 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("\"dishes[0].name\":\"must not be blank\"")))
-                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")));
+                .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")))
+                .andExpect(content().string(containsString("\"creationDate\":\"Creation date must be current or in future\"")));
 
         perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
