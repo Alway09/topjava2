@@ -8,7 +8,9 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.util.JsonUtil;
+import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import java.util.List;
 
@@ -23,13 +25,11 @@ import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.getUpdated;
 import static ru.javaops.topjava2.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 
-public class RestaurantAdminControllerTest extends AbstractRestaurantControllerTest {
+public class RestaurantAdminControllerTest extends AbstractControllerTest {
+    private static final String REST_URL = RestaurantAdminController.REST_URL + "/";
+
     @Autowired
     RestaurantRepository repository;
-
-    public RestaurantAdminControllerTest() {
-        super(RestaurantAdminController.REST_URL);
-    }
 
     // ===============================CREATE===============================
     @Test
@@ -51,7 +51,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createNotNew() throws Exception {
-        perform(MockMvcRequestBuilders.post(restURL)
+        perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(getUpdated())))
                 .andDo(print())
@@ -60,7 +60,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     private void create(Restaurant restaurant, ResultMatcher result) throws Exception {
-        perform(MockMvcRequestBuilders.post(restURL)
+        perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(restaurant)))
                 .andDo(print())
@@ -71,7 +71,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL))
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -81,7 +81,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getList() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + "/list"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -91,7 +91,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT3_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT3_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -101,7 +101,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
@@ -119,9 +119,17 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
         getByName("NotExist", List.of());
     }
 
+    protected void getByName(String name, List<RestaurantTo> expect) throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL).param("name", name))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(expect));
+    }
+
     @Test
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -133,7 +141,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
         Restaurant updated = getUpdated();
         update(updated, status().isNoContent());
 
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -145,7 +153,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     void updateNotFound() throws Exception {
         Restaurant updated = getUpdated();
         updated.setId(NOT_FOUND);
-        perform(MockMvcRequestBuilders.put(restURL + NOT_FOUND)
+        perform(MockMvcRequestBuilders.put(REST_URL + NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
@@ -160,7 +168,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     }
 
     private void update(Restaurant restaurant, ResultMatcher result) throws Exception {
-        perform(MockMvcRequestBuilders.put(restURL + RESTAURANT1_ID)
+        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(restaurant)))
                 .andDo(print())
@@ -171,7 +179,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(restURL + RESTAURANT2_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL + RESTAURANT2_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertFalse(repository.findById(RESTAURANT2_ID).isPresent());
@@ -180,7 +188,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void deleteNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.delete(restURL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
@@ -189,7 +197,7 @@ public class RestaurantAdminControllerTest extends AbstractRestaurantControllerT
     @Test
     @WithUserDetails(value = USER_MAIL)
     void deleteUserAuth() throws Exception {
-        perform(MockMvcRequestBuilders.delete(restURL + RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }

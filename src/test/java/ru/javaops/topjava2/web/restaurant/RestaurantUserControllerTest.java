@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.javaops.topjava2.to.RestaurantTo;
+import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import java.util.List;
 
@@ -16,15 +18,13 @@ import static ru.javaops.topjava2.web.TestData.RESTAURANT3;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 
-public class RestaurantUserControllerTest extends AbstractRestaurantControllerTest {
-    public RestaurantUserControllerTest() {
-        super(RestaurantUserController.REST_URL);
-    }
+public class RestaurantUserControllerTest extends AbstractControllerTest {
+    private static final String REST_URL = RestaurantUserController.REST_URL + "/";
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL))
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -34,7 +34,7 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getList() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + "/list"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -44,7 +44,7 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
     @Test
     @WithUserDetails(value = USER_MAIL)
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -54,7 +54,7 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
@@ -63,7 +63,7 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
     @Test
     @WithUserDetails(value = USER_MAIL)
     void get_notActual() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT3_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT3_ID))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("Entity with id=" + RESTAURANT3_ID + " not found")));
@@ -87,9 +87,17 @@ public class RestaurantUserControllerTest extends AbstractRestaurantControllerTe
         getByName("NotExist", List.of());
     }
 
+    protected void getByName(String name, List<RestaurantTo> expect) throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL).param("name", name))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(expect));
+    }
+
     @Test
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(restURL + RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
