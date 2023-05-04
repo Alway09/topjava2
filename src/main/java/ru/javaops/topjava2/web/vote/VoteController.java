@@ -14,10 +14,10 @@ import java.util.List;
 import static ru.javaops.topjava2.util.VoteUtil.createTos;
 
 @RestController
-@RequestMapping(value = VoteUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-public class VoteUserController {
-    public static final String REST_URL = "/api/user/votes";
+public class VoteController {
+    public static final String REST_URL = "/api/votes";
 
     VoteService service;
     RestaurantRepository restaurantRepository;

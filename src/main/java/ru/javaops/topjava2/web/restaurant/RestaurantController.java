@@ -19,11 +19,11 @@ import static ru.javaops.topjava2.util.RestaurantUtil.createTo;
 import static ru.javaops.topjava2.util.RestaurantUtil.createTos;
 
 @RestController
-@RequestMapping(value = RestaurantUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @AllArgsConstructor
-public class RestaurantUserController {
-    public static final String REST_URL = "/api/user/restaurants";
+public class RestaurantController {
+    public static final String REST_URL = "/api/restaurants";
     private RestaurantRepository repository;
     private VoteService voteService;
 

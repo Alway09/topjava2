@@ -18,8 +18,8 @@ import static ru.javaops.topjava2.web.TestData.RESTAURANT3;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 
-public class RestaurantUserControllerTest extends AbstractControllerTest {
-    private static final String REST_URL = RestaurantUserController.REST_URL + "/";
+public class RestaurantControllerTest extends AbstractControllerTest {
+    private static final String REST_URL = RestaurantController.REST_URL + "/";
 
     @Test
     @WithUserDetails(value = USER_MAIL)

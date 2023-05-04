@@ -8,8 +8,6 @@ import ru.javaops.topjava2.web.AbstractControllerTest;
 import ru.javaops.topjava2.web.restaurant.RestaurantTestData;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
@@ -23,8 +21,8 @@ import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT2_
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 import static ru.javaops.topjava2.web.vote.VoteTestData.*;
 
-public class VoteUserControllerTest extends AbstractControllerTest {
-    private static final String REST_URL = VoteUserController.REST_URL + "/";
+public class VoteControllerTest extends AbstractControllerTest {
+    private static final String REST_URL = VoteController.REST_URL + "/";
 
     @Test
     @WithUserDetails(value = USER_MAIL)

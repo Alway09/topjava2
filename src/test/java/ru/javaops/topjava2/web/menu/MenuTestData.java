@@ -41,7 +41,7 @@ public class MenuTestData {
     }
 
     public static MenuTo getNewInvalid2() {
-        return new MenuTo(null, "", -1, List.of(new Dish("DishName", 1)), LocalDate.now().minusDays(100));
+        return new MenuTo(null, "A", -1, List.of(new Dish("DishName", 1)), LocalDate.now().minusDays(100));
     }
 
     public static MenuTo getNewInvalid3() {
