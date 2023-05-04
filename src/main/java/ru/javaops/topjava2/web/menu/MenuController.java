@@ -34,7 +34,7 @@ public class MenuController {
     RestaurantRepository restaurantRepository;
     CreationDateValidator creationDateValidator;
 
-    public static final String REST_URL = "/api/admin/menu";
+    public static final String REST_URL = "/api/admin/menus";
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {

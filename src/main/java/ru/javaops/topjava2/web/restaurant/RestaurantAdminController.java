@@ -31,7 +31,7 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 @Slf4j
 @AllArgsConstructor
 public class RestaurantAdminController {
-    public static final String REST_URL = "/api/admin/restaurant";
+    public static final String REST_URL = "/api/admin/restaurants";
     private RestaurantRepository repository;
     private VoteService voteService;
 

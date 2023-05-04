@@ -23,7 +23,7 @@ import static ru.javaops.topjava2.util.RestaurantUtil.createTos;
 @Slf4j
 @AllArgsConstructor
 public class RestaurantUserController {
-    public static final String REST_URL = "/api/user/restaurant";
+    public static final String REST_URL = "/api/user/restaurants";
     private RestaurantRepository repository;
     private VoteService voteService;
 

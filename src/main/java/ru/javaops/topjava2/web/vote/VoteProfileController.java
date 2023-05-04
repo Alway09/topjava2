@@ -18,7 +18,7 @@ import static ru.javaops.topjava2.util.VoteUtil.createTos;
 @RequestMapping(value = VoteProfileController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class VoteProfileController {
-    public static final String REST_URL = "/api/profile/vote";
+    public static final String REST_URL = "/api/profile/votes";
     VoteService service;
     RestaurantRepository restaurantRepository;
 
