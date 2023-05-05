@@ -43,8 +43,8 @@ public class RestaurantAdminController {
     }
 
     @GetMapping("/list")
-    public List<Restaurant> getList() {
-        return service.getList();
+    public List<CreateRestaurantTo> getList() {
+        return createTos(service.getList());
     }
 
     @GetMapping("/{id}")

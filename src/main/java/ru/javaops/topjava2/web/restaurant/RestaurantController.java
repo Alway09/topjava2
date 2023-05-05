@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.service.VoteService;
+import ru.javaops.topjava2.to.CreateRestaurantTo;
 import ru.javaops.topjava2.to.RestaurantTo;
 
 import java.util.List;
@@ -35,8 +36,8 @@ public class RestaurantController {
     }
 
     @GetMapping("/list")
-    public List<Restaurant> getList() {
-        return service.getListWithActualMenus();
+    public List<CreateRestaurantTo> getList() {
+        return createTos(service.getListWithActualMenus());
     }
 
     @GetMapping("/{id}")
