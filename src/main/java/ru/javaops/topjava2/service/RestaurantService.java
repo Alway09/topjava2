@@ -32,7 +32,7 @@ public class RestaurantService {
 
     public Restaurant getWithActualMenus(int id) {
         log.info("get restaurant id={} with actual menus", id);
-        Restaurant restaurant = repository.getWithMenusCreatedAtTheDate(id, LocalDate.now())
+        Restaurant restaurant = repository.getWithMenusWithActualDate(id, LocalDate.now())
                 .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
         return fetchMenus(restaurant);
     }
@@ -44,7 +44,7 @@ public class RestaurantService {
 
     public Restaurant getByNameWithActualMenus(String name) {
         log.info("get restaurant with name={}", name);
-        return fetchMenus(repository.getByNameWithMenusCreatedAtTheDate(name, LocalDate.now()).orElse(null));
+        return fetchMenus(repository.getByNameWithMenusWithActualDate(name, LocalDate.now()).orElse(null));
     }
 
     public List<Restaurant> getAll() {
@@ -54,7 +54,7 @@ public class RestaurantService {
 
     public List<Restaurant> getAllWithActualMenus() {
         log.info("get all restaurants with actual menus");
-        return fetchMenus(repository.getAllWithMenusCreatedAtDate(LocalDate.now()));
+        return fetchMenus(repository.getAllWithMenusWithActualDate(LocalDate.now()));
     }
 
     public List<Restaurant> getList() {
@@ -64,7 +64,7 @@ public class RestaurantService {
 
     public List<Restaurant> getListWithActualMenus() {
         log.info("get all restaurants");
-        return repository.getListWithMenusCreatedAtDate(LocalDate.now());
+        return repository.getListWithMenusWithActualDate(LocalDate.now());
     }
 
     public Restaurant findById(int id) {

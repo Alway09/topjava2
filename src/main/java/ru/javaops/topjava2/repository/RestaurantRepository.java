@@ -14,26 +14,26 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     Optional<Restaurant> findById(int id);
 
     @EntityGraph(attributePaths = "menus")
-    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE r.id=:id AND m.creationDate=:creation_date")
-    Optional<Restaurant> getWithMenusCreatedAtTheDate(@Param("id") int id, @Param("creation_date") LocalDate creationDate);
+    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE r.id=:id AND m.actualDate=:actual_date")
+    Optional<Restaurant> getWithMenusWithActualDate(@Param("id") int id, @Param("actual_date") LocalDate actualDate);
 
     @Override
     @EntityGraph(attributePaths = "menus")
     List<Restaurant> findAll();
 
     @EntityGraph(attributePaths = "menus")
-    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.creationDate=:creation_date")
-    List<Restaurant> getAllWithMenusCreatedAtDate(@Param("creation_date") LocalDate creationDate);
+    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.actualDate=:actual_date")
+    List<Restaurant> getAllWithMenusWithActualDate(@Param("actual_date") LocalDate actualDate);
 
-    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.creationDate=:creation_date ORDER BY r.name")
-    List<Restaurant> getListWithMenusCreatedAtDate(@Param("creation_date") LocalDate creationDate);
+    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE m.actualDate=:actual_date ORDER BY r.name")
+    List<Restaurant> getListWithMenusWithActualDate(@Param("actual_date") LocalDate actualDate);
 
     @EntityGraph(attributePaths = "menus")
     @Query("SELECT r FROM Restaurant r WHERE r.name=:name")
     Optional<Restaurant> getByNameWithMenus(@Param("name") String name);
 
     @EntityGraph(attributePaths = "menus")
-    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE r.name=:name AND m.creationDate=:creation_date")
-    Optional<Restaurant> getByNameWithMenusCreatedAtTheDate(@Param("name") String name, @Param("creation_date") LocalDate creationDate);
+    @Query("SELECT r FROM Restaurant r JOIN FETCH Menu m ON r.id=m.restaurant.id WHERE r.name=:name AND m.actualDate=:actual_date")
+    Optional<Restaurant> getByNameWithMenusWithActualDate(@Param("name") String name, @Param("actual_date") LocalDate actualDate);
 }
 

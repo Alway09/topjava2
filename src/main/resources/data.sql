@@ -19,7 +19,7 @@ INSERT INTO MENU (name, restaurant_id)
 VALUES ('Меню дня', 1),
        ('Меню дня', 2);
 
-INSERT INTO MENU (name, restaurant_id, creation_date)
+INSERT INTO MENU (name, restaurant_id, actual_date)
 VALUES ('Меню дня', 3, '2023-01-01');
 
 INSERT INTO DISH (menu_id, name, price)

@@ -14,7 +14,7 @@ public class MenuUtil {
     }
 
     public static MenuTo createTo(Menu menu) {
-        return new MenuTo(menu.getId(), menu.getName(), menu.getRestaurant().getId(), menu.getDishes(), menu.getCreationDate());
+        return new MenuTo(menu.getId(), menu.getName(), menu.getRestaurant().getId(), menu.getDishes(), menu.getActualDate());
     }
 
     public static List<MenuTo> createTos(Iterable<Menu> menus) {

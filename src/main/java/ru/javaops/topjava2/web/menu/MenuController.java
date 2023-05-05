@@ -72,7 +72,7 @@ public class MenuController {
         Menu actual = repository.getExisted(id);
 
         menu.setRestaurant(actual.getRestaurant());
-        menu.setCreationDate(actual.getCreationDate());
+        menu.setActualDate(actual.getActualDate());
         repository.save(menu);
     }
 
@@ -82,7 +82,7 @@ public class MenuController {
         checkNew(menuTo);
 
         Menu created = createFromTo(menuTo);
-        created.setCreationDate(requireNonNullElse(menuTo.getCreationDate(), LocalDate.now()));
+        created.setActualDate(requireNonNullElse(menuTo.getCreationDate(), LocalDate.now()));
 
         Restaurant restaurant = restaurantService.findById(menuTo.getRestaurantId());
         created.setRestaurant(restaurant);

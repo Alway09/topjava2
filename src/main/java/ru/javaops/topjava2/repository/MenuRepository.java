@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MenuRepository extends BaseRepository<Menu> {
     @EntityGraph(attributePaths = "dishes")
-    @Query("SELECT m FROM Menu m WHERE m.creationDate>=:start_date AND m.creationDate<:end_date")
+    @Query("SELECT m FROM Menu m WHERE m.actualDate>=:start_date AND m.actualDate<:end_date")
     List<Menu> getAllBetweenInclusive(@Param("start_date") LocalDate startDate, @Param("end_date") LocalDate endDate);
 
     @EntityGraph(attributePaths = "dishes")
