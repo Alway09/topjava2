@@ -83,7 +83,7 @@ public class VoteUtil {
     }
 
     public static VoteTo createTo(Vote vote) {
-        return new VoteTo(vote.getId(), vote.getRestaurant().getId(), vote.getDateTime());
+        return new VoteTo(vote.getRestaurant().getId(), vote.getDateTime());
     }
 
     public static List<VoteTo> createTos(Iterable<Vote> votes) {
