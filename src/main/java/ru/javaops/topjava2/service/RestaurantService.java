@@ -23,7 +23,7 @@ public class RestaurantService {
 
     public Restaurant get(int id) {
         log.info("get restaurant id={} with menus", id);
-        Restaurant restaurant = repository.getWithMenus(id)
+        Restaurant restaurant = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
         return fetchMenus(restaurant);
     }
@@ -47,7 +47,7 @@ public class RestaurantService {
 
     public List<Restaurant> getAll() {
         log.info("get all restaurants with menus");
-        return fetchMenus(repository.getAllWithMenus());
+        return fetchMenus(repository.findAll());
     }
 
     public List<Restaurant> getAllWithActualMenus() {
@@ -83,12 +83,11 @@ public class RestaurantService {
             return null;
         }
 
-        List<Menu> fetchedMenus = new ArrayList<>();
+        List<Integer> fetchedMenuIds = new ArrayList<>();
         for (Menu menu : restaurant.getMenus()) {
-            Menu fetchedMenu = menuRepository.getExisted(menu.id());
-            fetchedMenus.add(fetchedMenu);
+            fetchedMenuIds.add(menu.id());
         }
-        restaurant.setMenus(fetchedMenus);
+        restaurant.setMenus(menuRepository.findAllById(fetchedMenuIds));
         return restaurant;
     }
 

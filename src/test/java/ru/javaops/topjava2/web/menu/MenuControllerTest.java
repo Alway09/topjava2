@@ -106,7 +106,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, MENU2, MENU3))));
+                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU2, MENU1, MENU3))));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, MENU2))));
+                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU2, MENU1))));
     }
 
     @Test
