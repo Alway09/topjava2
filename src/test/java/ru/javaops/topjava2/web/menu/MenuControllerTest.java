@@ -11,6 +11,7 @@ import ru.javaops.topjava2.to.MenuTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
@@ -106,6 +107,18 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, MENU2, MENU3))));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getAllBetween() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .param("startDate", LocalDate.now().toString())
+                .param("endDate", LocalDate.now().plusDays(1).toString()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, MENU2))));
     }
 
     @Test

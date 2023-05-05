@@ -3,10 +3,10 @@ package ru.javaops.topjava2.web.menu;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,9 +42,12 @@ public class MenuController {
     }
 
     @GetMapping("/")
-    public List<MenuTo> getAll() {
-        log.info("get all menus");
-        return createTos(repository.findAll());
+    public List<MenuTo> getAll(@RequestParam @Nullable LocalDate startDate,
+                               @RequestParam @Nullable LocalDate endDate) {
+        startDate = requireNonNullElse(startDate, LocalDate.of(2023, 1, 1));
+        endDate = requireNonNullElse(endDate, LocalDate.of(3000, 1, 1));
+        log.info("get all menus between {} and {}", startDate, endDate);
+        return createTos(repository.getAllBetweenInclusive(startDate, endDate));
     }
 
     @GetMapping("/{id}")
