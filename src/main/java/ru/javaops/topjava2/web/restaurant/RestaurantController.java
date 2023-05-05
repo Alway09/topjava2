@@ -5,14 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
-import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.service.VoteService;
 import ru.javaops.topjava2.to.RestaurantTo;
-import ru.javaops.topjava2.util.VoteUtil;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javaops.topjava2.util.RestaurantUtil.createTo;
@@ -24,34 +21,28 @@ import static ru.javaops.topjava2.util.RestaurantUtil.createTos;
 @AllArgsConstructor
 public class RestaurantController {
     public static final String REST_URL = "/api/restaurants";
-    private RestaurantRepository repository;
+    RestaurantService service;
     private VoteService voteService;
 
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
-            log.info("get restaurant with name={}", name);
-            var restaurant = repository.getByNameWithMenusCreatedAtTheDate(name, LocalDate.now());
-            return restaurant
-                    .map(dbRestaurant -> List.of(createTo(dbRestaurant, voteService.getVotesAmountBetweenInclusive(dbRestaurant.id(), VoteUtil.votingStart(), VoteUtil.votingEnd()))))
-                    .orElseGet(List::of);
+            var restaurant = service.getByNameWithActualMenus(name);
+            return restaurant == null ? List.of() : List.of(createTo(restaurant, voteService.getActualVotesAmount(restaurant.id())));
         }
-        log.info("get all restaurants with menus and votes");
-        return createTos(repository.getAllWithMenusCreatedAtDate(LocalDate.now()),
-                voteService.getVotesAmountOfAllRestaurantsBetweenInclusive(VoteUtil.votingStart(), VoteUtil.votingEnd()));
+        return createTos(service.getAllWithActualMenus(),
+                voteService.getActualVotesAmountOfAllRestaurants());
     }
 
     @GetMapping("/list")
     public List<Restaurant> getList() {
-        log.info("get all restaurants");
-        return repository.getListWithMenusCreatedAtDate(LocalDate.now());
+        return service.getListWithActualMenus();
     }
 
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
-        var restaurant = repository.getWithMenusCreatedAtTheDate(id, LocalDate.now())
-                .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
-        return createTo(restaurant, voteService.getVotesAmountBetweenInclusive(id, VoteUtil.votingStart(), VoteUtil.votingEnd()));
+        var restaurant = service.getWithActualMenus(id);
+        return createTo(restaurant, voteService.getActualVotesAmount(id));
     }
 }

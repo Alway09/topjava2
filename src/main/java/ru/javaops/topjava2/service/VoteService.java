@@ -58,11 +58,19 @@ public class VoteService {
         return repository.getVotesAmountBetweenInclusive(restaurantId, startDateTime, endDateTime);
     }
 
+    public long getActualVotesAmount(int restaurantId) {
+        return getVotesAmountBetweenInclusive(restaurantId, votingStart(), votingEnd());
+    }
+
     public Map<Integer, Long> getVotesAmountOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
         endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
         log.info("get votes amount for all restaurants for user id={} between {} and {}", authId(), startDateTime, endDateTime);
         return repository.getVotesAmountOfAllRestaurantsBetweenInclusive(startDateTime, endDateTime);
+    }
+
+    public Map<Integer, Long> getActualVotesAmountOfAllRestaurants() {
+        return getVotesAmountOfAllRestaurantsBetweenInclusive(votingStart(), votingEnd());
     }
 
     public List<Vote> getAllUserVotes() {

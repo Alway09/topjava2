@@ -17,7 +17,8 @@ public class RestaurantUtil {
     public static List<RestaurantTo> createTos(Collection<Restaurant> restaurants, Map<Integer, Long> restaurantVotes) {
         return restaurants.stream()
                 .map(restaurant -> createTo(restaurant, restaurantVotes.getOrDefault(restaurant.getId(), 0L)))
-                .sorted(Comparator.comparing(RestaurantTo::getVotesAmount).thenComparing(RestaurantTo::getName))
+                .sorted(Comparator.comparing(RestaurantTo::getVotesAmount).reversed()
+                        .thenComparing(RestaurantTo::getName))
                 .toList();
     }
 

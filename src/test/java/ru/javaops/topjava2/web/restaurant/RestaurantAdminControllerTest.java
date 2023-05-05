@@ -6,8 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
-import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +31,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
     private static final String REST_URL = RestaurantAdminController.REST_URL + "/";
 
     @Autowired
-    RestaurantRepository repository;
+    RestaurantService service;
 
     // ===============================CREATE===============================
     @Test
@@ -39,7 +41,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
         create(newRestaurant, status().isCreated());
 
         newRestaurant.setId(RESTAURANT_NEW_ID);
-        RESTAURANT_MATCHER.assertMatch(repository.getExisted(RESTAURANT_NEW_ID), newRestaurant);
+        RESTAURANT_MATCHER.assertMatch(service.findById(RESTAURANT_NEW_ID), newRestaurant);
     }
 
     @Test
@@ -204,7 +206,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + RESTAURANT2_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertFalse(repository.findById(RESTAURANT2_ID).isPresent());
+        assertThrows(NotFoundException.class, () -> service.findById(RESTAURANT2_ID));
     }
 
     @Test

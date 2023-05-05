@@ -13,7 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Menu;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.repository.MenuRepository;
-import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.to.MenuTo;
 
 import java.net.URI;
@@ -31,7 +31,7 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 @AllArgsConstructor
 public class MenuController {
     MenuRepository repository;
-    RestaurantRepository restaurantRepository;
+    RestaurantService restaurantService;
     CreationDateValidator creationDateValidator;
 
     public static final String REST_URL = "/api/admin/menus";
@@ -81,7 +81,7 @@ public class MenuController {
         Menu created = repository.save(createFromTo(menuTo));
         created.setCreationDate(requireNonNullElse(menuTo.getCreationDate(), LocalDate.now()));
 
-        Restaurant restaurant = restaurantRepository.getExisted(menuTo.getRestaurantId());
+        Restaurant restaurant = restaurantService.findById(menuTo.getRestaurantId());
         created.setRestaurant(restaurant);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()

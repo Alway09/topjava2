@@ -33,10 +33,10 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void successUpdate() {
         setVotingTimes(-1, 1);
-        assertEquals(2, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
         service.createOrUpdate(RESTAURANT2);
-        assertEquals(1, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT2_ID, votingStart(), votingEnd()));
-        assertEquals(1, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(1, service.getActualVotesAmount(RestaurantTestData.RESTAURANT2_ID));
+        assertEquals(1, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
     }
 
     @Test
@@ -45,9 +45,9 @@ public class VoteServiceTest {
     void successCreate() {
         setVotingTimes(-1, 1);
 
-        assertEquals(2, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
         service.createOrUpdate(RESTAURANT1);
-        assertEquals(3, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(3, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotes() {
         setVotingTimes(-1, 1);
-        assertEquals(2, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotes_votingStartAndEndOutOfBounds() {
         setVotingTimes(-1, -2);
-        assertEquals(0, service.getVotesAmountBetweenInclusive(RestaurantTestData.RESTAURANT1_ID, votingStart(), votingEnd()));
+        assertEquals(0, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
     }
 
     @Test
@@ -95,12 +95,12 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotesOfRestaurants() {
         setVotingTimes(-1, 1);
-        Map<Integer, Long> votes = service.getVotesAmountOfAllRestaurantsBetweenInclusive(votingStart(), votingEnd());
+        Map<Integer, Long> votes = service.getActualVotesAmountOfAllRestaurants();
         assertEquals(2, votes.get(RestaurantTestData.RESTAURANT1_ID));
         assertEquals(0, votes.getOrDefault(RestaurantTestData.RESTAURANT2_ID, 0L));
         service.createOrUpdate(RESTAURANT2);
 
-        votes = service.getVotesAmountOfAllRestaurantsBetweenInclusive(votingStart(), votingEnd());
+        votes = service.getActualVotesAmountOfAllRestaurants();
         assertEquals(1, votes.get(RestaurantTestData.RESTAURANT1_ID));
         assertEquals(1, votes.get(RestaurantTestData.RESTAURANT2_ID));
     }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.service.VoteService;
 import ru.javaops.topjava2.to.VoteAmountTo;
 
@@ -20,7 +20,7 @@ public class VoteController {
     public static final String REST_URL = "/api/votes";
 
     VoteService service;
-    RestaurantRepository restaurantRepository;
+    RestaurantService restaurantService;
 
     @GetMapping("/")
     public List<VoteAmountTo> getAllVotesAmount(@RequestParam @Nullable LocalDateTime startDateTime,
@@ -32,7 +32,7 @@ public class VoteController {
     public Long getVotesAmount(@PathVariable int restaurantId,
                                @RequestParam @Nullable LocalDateTime startDateTime,
                                @RequestParam @Nullable LocalDateTime endDateTime) {
-        restaurantRepository.getExisted(restaurantId);
+        restaurantService.findById(restaurantId);
         return service.getVotesAmountBetweenInclusive(restaurantId, startDateTime, endDateTime);
     }
 }

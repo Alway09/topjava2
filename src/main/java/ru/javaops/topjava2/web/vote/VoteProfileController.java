@@ -1,14 +1,12 @@
 package ru.javaops.topjava2.web.vote;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.service.VoteService;
 import ru.javaops.topjava2.to.VoteTo;
-import ru.javaops.topjava2.web.AuthUser;
 
 import java.util.List;
 
@@ -20,7 +18,7 @@ import static ru.javaops.topjava2.util.VoteUtil.createTos;
 public class VoteProfileController {
     public static final String REST_URL = "/api/profile/votes";
     VoteService service;
-    RestaurantRepository restaurantRepository;
+    RestaurantService restaurantService;
 
     @GetMapping("/")
     public List<VoteTo> getAll() {
@@ -29,13 +27,13 @@ public class VoteProfileController {
 
     @GetMapping("/{restaurantId}")
     public List<VoteTo> getAllForRestaurant(@PathVariable int restaurantId) {
-        restaurantRepository.getExisted(restaurantId);
+        restaurantService.findById(restaurantId);
         return createTos(service.getAllUserVotesForRestaurant(restaurantId));
     }
 
     @PutMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void voteForRestaurant(@PathVariable int restaurantId) {
-        service.createOrUpdate(restaurantRepository.getExisted(restaurantId));
+        service.createOrUpdate(restaurantService.findById(restaurantId));
     }
 }
