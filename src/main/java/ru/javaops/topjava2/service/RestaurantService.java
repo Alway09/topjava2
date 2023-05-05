@@ -13,6 +13,8 @@ import ru.javaops.topjava2.repository.RestaurantRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 @AllArgsConstructor
@@ -92,10 +94,19 @@ public class RestaurantService {
     }
 
     private List<Restaurant> fetchMenus(List<Restaurant> restaurants) {
-        List<Restaurant> restaurantsWithFetchedMenus = new ArrayList<>();
+        //key - menuId, value - restaurant
+        Map<Integer, Restaurant> menuIds = new HashMap<>();
         for (Restaurant restaurant : restaurants) {
-            restaurantsWithFetchedMenus.add(fetchMenus(restaurant));
+            for (Menu menu : restaurant.getMenus()) {
+                menuIds.put(menu.id(), restaurant);
+            }
+            restaurant.setMenus(new ArrayList<>());
         }
-        return restaurantsWithFetchedMenus;
+        List<Menu> fetchedMenus = menuRepository.findAllById(menuIds.keySet());
+        for (Menu fetchedMenu : fetchedMenus) {
+            menuIds.get(fetchedMenu.id()).getMenus().add(fetchedMenu);
+        }
+
+        return restaurants;
     }
 }
