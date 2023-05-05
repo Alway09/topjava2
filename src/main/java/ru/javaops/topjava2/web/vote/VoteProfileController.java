@@ -36,4 +36,10 @@ public class VoteProfileController {
     public void voteForRestaurant(@PathVariable int restaurantId) {
         service.createOrUpdate(restaurantService.findById(restaurantId));
     }
+
+    @DeleteMapping("/")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteVote() {
+        service.deleteActualVote();
+    }
 }

@@ -10,6 +10,7 @@ import ru.javaops.topjava2.repository.VoteRepository;
 import ru.javaops.topjava2.util.VoteUtil;
 import ru.javaops.topjava2.web.AuthUser;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNullElse;
 import static ru.javaops.topjava2.util.VoteUtil.*;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava2.web.AuthUser.authId;
 import static ru.javaops.topjava2.web.AuthUser.authUser;
 
@@ -81,5 +83,14 @@ public class VoteService {
     public List<Vote> getAllUserVotesForRestaurant(int restaurantId) {
         log.info("get votes of user id={} for restaurant  id={}", authId(), restaurantId);
         return repository.getAllUserVotesForRestaurant(AuthUser.authId(), restaurantId);
+    }
+
+    public void deleteActualVote() {
+        Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
+        if (vote.isPresent()) {
+            repository.deleteExisted(vote.get().id());
+        } else {
+            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
+        }
     }
 }

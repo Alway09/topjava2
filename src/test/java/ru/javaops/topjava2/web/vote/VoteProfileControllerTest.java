@@ -20,6 +20,7 @@ import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT3_ID;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
+import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE5_ID;
 import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE_TO_MATCHER_EXCLUDE_DATE_TIME;
 
 public class VoteProfileControllerTest extends AbstractControllerTest {
@@ -85,5 +86,21 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void deleteActualVote() throws Exception {
+        if (VoteUtil.isVotingInProcess()) {
+            perform(MockMvcRequestBuilders.delete(REST_URL))
+                    .andDo(print())
+                    .andExpect(status().isNoContent());
+        } else {
+            perform(MockMvcRequestBuilders.delete(REST_URL))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
+        }
+
     }
 }

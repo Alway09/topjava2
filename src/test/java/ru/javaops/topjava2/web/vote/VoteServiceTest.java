@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.javaops.topjava2.util.VoteUtil.*;
 import static ru.javaops.topjava2.web.TestData.RESTAURANT1;
 import static ru.javaops.topjava2.web.TestData.RESTAURANT2;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
+import static ru.javaops.topjava2.web.vote.VoteTestData.*;
 
 @SpringBootTest
 public class VoteServiceTest {
@@ -33,10 +35,10 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void successUpdate() {
         setVotingTimes(-1, 1);
-        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(2, service.getActualVotesAmount(RESTAURANT1_ID));
         service.createOrUpdate(RESTAURANT2);
         assertEquals(1, service.getActualVotesAmount(RestaurantTestData.RESTAURANT2_ID));
-        assertEquals(1, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(1, service.getActualVotesAmount(RESTAURANT1_ID));
     }
 
     @Test
@@ -45,9 +47,9 @@ public class VoteServiceTest {
     void successCreate() {
         setVotingTimes(-1, 1);
 
-        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(2, service.getActualVotesAmount(RESTAURANT1_ID));
         service.createOrUpdate(RESTAURANT1);
-        assertEquals(3, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(3, service.getActualVotesAmount(RESTAURANT1_ID));
     }
 
     @Test
@@ -63,7 +65,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotes() {
         setVotingTimes(-1, 1);
-        assertEquals(2, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(2, service.getActualVotesAmount(RESTAURANT1_ID));
     }
 
     @Test
@@ -71,7 +73,7 @@ public class VoteServiceTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotes_votingStartAndEndOutOfBounds() {
         setVotingTimes(-1, -2);
-        assertEquals(0, service.getActualVotesAmount(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(0, service.getActualVotesAmount(RESTAURANT1_ID));
     }
 
     @Test
@@ -80,13 +82,13 @@ public class VoteServiceTest {
     void getVotesOfAllRestaurants() {
         setVotingTimes(-1, 1);
         Map<Integer, Long> votes = service.getVotesAmountOfAllRestaurantsBetweenInclusive(null, null);
-        assertEquals(5, votes.get(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(5, votes.get(RESTAURANT1_ID));
         assertEquals(1, votes.get(RestaurantTestData.RESTAURANT2_ID));
         service.createOrUpdate(RESTAURANT2);
 
         setVotingTimes(-2, -1);
         votes = service.getVotesAmountOfAllRestaurantsBetweenInclusive(null, null);
-        assertEquals(4, votes.get(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(4, votes.get(RESTAURANT1_ID));
         assertEquals(2, votes.get(RestaurantTestData.RESTAURANT2_ID));
     }
 
@@ -96,12 +98,28 @@ public class VoteServiceTest {
     void getActualVotesOfRestaurants() {
         setVotingTimes(-1, 1);
         Map<Integer, Long> votes = service.getActualVotesAmountOfAllRestaurants();
-        assertEquals(2, votes.get(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(2, votes.get(RESTAURANT1_ID));
         assertEquals(0, votes.getOrDefault(RestaurantTestData.RESTAURANT2_ID, 0L));
         service.createOrUpdate(RESTAURANT2);
 
         votes = service.getActualVotesAmountOfAllRestaurants();
-        assertEquals(1, votes.get(RestaurantTestData.RESTAURANT1_ID));
+        assertEquals(1, votes.get(RESTAURANT1_ID));
         assertEquals(1, votes.get(RestaurantTestData.RESTAURANT2_ID));
+    }
+
+    @Test
+    @Transactional
+    @WithUserDetails(UserTestData.USER_MAIL)
+    void successDelete() {
+        setVotingTimes(-1, 1);
+        service.deleteActualVote();
+        assertEquals(RESTAURANT1_VOTES_AMOUNT - 1, service.getVotesAmountBetweenInclusive(RESTAURANT1_ID, null, null));
+    }
+
+    @Test
+    @WithUserDetails(UserTestData.USER_MAIL)
+    void failureDelete() {
+        setVotingTimes(-2, -1);
+        assertThrows(IllegalRequestDataException.class, () -> service.deleteActualVote());
     }
 }
