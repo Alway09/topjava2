@@ -1,5 +1,7 @@
 package ru.javaops.topjava2.web.restaurant;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ public class RestaurantAdminController {
     private VoteService voteService;
     private RestaurantService service;
 
+    @Operation(summary = "Get all restaurants or one restaurant by name",
+            description = "Get all restaurants with it's menus and actual votes OR get restaurant with it's menus and actual votes by name if name is present.",
+            parameters = @Parameter(name = "name", description = "Name of the restaurant"))
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
@@ -42,23 +47,27 @@ public class RestaurantAdminController {
                 voteService.getActualVotesAmountOfAllRestaurants());
     }
 
+    @Operation(summary = "Get list of all restaurants", description = "Each element contains only name and id.")
     @GetMapping("/list")
     public List<CreateRestaurantTo> getList() {
         return createTos(service.getList());
     }
 
+    @Operation(summary = "Get restaurant by id", description = "Get restaurant with it's menus and actual votes amount by id.")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         var restaurant = service.get(id);
         return createTo(restaurant, voteService.getActualVotesAmount(id));
     }
 
+    @Operation(summary = "Delete restaurant by id", description = "Restaurant menus deletes cascading.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         service.delete(id);
     }
 
+    @Operation(summary = "Create restaurant")
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createWithLocation(@Valid @RequestBody CreateRestaurantTo restaurantTo) {
         log.info("create restaurant {}", restaurantTo);
@@ -70,6 +79,7 @@ public class RestaurantAdminController {
         return ResponseEntity.created(uriOfNewResource).build();
     }
 
+    @Operation(summary = "Update restaurant by id")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody CreateRestaurantTo restaurantTo, @PathVariable int id) {
