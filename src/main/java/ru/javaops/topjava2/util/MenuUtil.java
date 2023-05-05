@@ -25,7 +25,8 @@ public class MenuUtil {
         for (Menu menu : menus) {
             menuTos.add(createTo(menu));
         }
-        menuTos.sort(Comparator.comparing(MenuTo::getCreationDate).thenComparing(MenuTo::getName));
+        menuTos.sort(Comparator.comparing(MenuTo::getCreationDate).reversed()
+                .thenComparing(MenuTo::getName));
         return menuTos;
     }
 }

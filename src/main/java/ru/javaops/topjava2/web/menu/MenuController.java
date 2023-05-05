@@ -81,11 +81,12 @@ public class MenuController {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());
         checkNew(menuTo);
 
-        Menu created = repository.save(createFromTo(menuTo));
+        Menu created = createFromTo(menuTo);
         created.setCreationDate(requireNonNullElse(menuTo.getCreationDate(), LocalDate.now()));
 
         Restaurant restaurant = restaurantService.findById(menuTo.getRestaurantId());
         created.setRestaurant(restaurant);
+        created = repository.save(created);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
