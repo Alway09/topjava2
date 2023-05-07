@@ -1,5 +1,7 @@
 package ru.javaops.topjava2.web.restaurant;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -25,6 +27,9 @@ public class RestaurantController {
     RestaurantService service;
     private VoteService voteService;
 
+    @Operation(summary = "Get all restaurants or one restaurant by name",
+            description = "Get all restaurants with it's actual menus and actual votes OR get restaurant with it's actual menus and actual votes by name if name is present.",
+            parameters = @Parameter(name = "name", description = "Name of the restaurant"))
     @GetMapping("/")
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
@@ -35,11 +40,13 @@ public class RestaurantController {
                 voteService.getActualVotesAmountOfAllRestaurants());
     }
 
+    @Operation(summary = "Get list of all restaurants with actual menus", description = "Each element contains only name and id.")
     @GetMapping("/list")
     public List<CreateRestaurantTo> getList() {
         return createTos(service.getListWithActualMenus());
     }
 
+    @Operation(summary = "Get restaurant by id", description = "Get restaurant with it's actual menus and actual votes amount by id.")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
