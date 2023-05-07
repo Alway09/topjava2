@@ -71,6 +71,14 @@ public class VoteServiceTest {
     @Test
     @Transactional
     @WithUserDetails(UserTestData.USER_MAIL)
+    void getActualVote(){
+        setVotingTimes(-1, 1);
+        assertEquals(1, service.getActualVote().getRestaurant().getId());
+    }
+
+    @Test
+    @Transactional
+    @WithUserDetails(UserTestData.USER_MAIL)
     void getActualVotes_votingStartAndEndOutOfBounds() {
         setVotingTimes(-1, -2);
         assertEquals(0, service.getActualVotesAmount(RESTAURANT1_ID));

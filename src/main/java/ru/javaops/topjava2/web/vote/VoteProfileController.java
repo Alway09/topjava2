@@ -10,6 +10,7 @@ import ru.javaops.topjava2.to.VoteTo;
 
 import java.util.List;
 
+import static ru.javaops.topjava2.util.VoteUtil.createTo;
 import static ru.javaops.topjava2.util.VoteUtil.createTos;
 
 @RestController
@@ -31,7 +32,12 @@ public class VoteProfileController {
         return createTos(service.getAllUserVotesForRestaurant(restaurantId));
     }
 
-    @PutMapping("/{restaurantId}")
+    @GetMapping("/actual")
+    public VoteTo getActualVote() {
+        return createTo(service.getActualVote());
+    }
+
+    @PostMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void voteForRestaurant(@PathVariable int restaurantId) {
         service.createOrUpdate(restaurantService.findById(restaurantId));
@@ -39,7 +45,7 @@ public class VoteProfileController {
 
     @DeleteMapping("/")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVote() {
+    public void deleteActualVote() {
         service.deleteActualVote();
     }
 }

@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
+import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.model.Vote;
 import ru.javaops.topjava2.repository.VoteRepository;
 import ru.javaops.topjava2.util.VoteUtil;
 import ru.javaops.topjava2.web.AuthUser;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNullElse;
 import static ru.javaops.topjava2.util.VoteUtil.*;
-import static ru.javaops.topjava2.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava2.web.AuthUser.authId;
 import static ru.javaops.topjava2.web.AuthUser.authUser;
 
@@ -64,6 +63,16 @@ public class VoteService {
         return getVotesAmountBetweenInclusive(restaurantId, votingStart(), votingEnd());
     }
 
+    public Vote getActualVote() {
+        Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
+        if (vote.isPresent()) {
+            return vote.get();
+        } else if (!isVotingInProcess()) {
+            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
+        }
+        throw new NotFoundException("Actual vote not found");
+    }
+
     public Map<Integer, Long> getVotesAmountOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
         endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
@@ -86,11 +95,6 @@ public class VoteService {
     }
 
     public void deleteActualVote() {
-        Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
-        if (vote.isPresent()) {
-            repository.deleteExisted(vote.get().id());
-        } else {
-            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
-        }
+        repository.deleteExisted(getActualVote().id());
     }
 }

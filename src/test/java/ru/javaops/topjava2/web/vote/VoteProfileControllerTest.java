@@ -15,12 +15,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.util.VoteUtil.createTo;
 import static ru.javaops.topjava2.util.VoteUtil.createTos;
 import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT3_ID;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
-import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE5_ID;
 import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE_TO_MATCHER_EXCLUDE_DATE_TIME;
 
 public class VoteProfileControllerTest extends AbstractControllerTest {
@@ -66,13 +66,27 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = USER_MAIL)
+    void getActualVote() throws Exception {
+        if (VoteUtil.isVotingInProcess()) {
+            perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
+                    .andDo(print())
+                    .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE_TIME.contentJson(createTo(VOTE5)));
+        } else {
+            perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
+                    .andDo(print())
+                    .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
+        }
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
     public void voteForRestaurant() throws Exception {
         if (VoteUtil.isVotingInProcess()) {
-            perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT3_ID))
+            perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
                     .andDo(print())
                     .andExpect(status().isNoContent());
         } else {
-            perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT3_ID))
+            perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
                     .andDo(print())
                     .andExpect(status().isUnprocessableEntity())
                     .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
@@ -82,7 +96,7 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     public void voteForRestaurant_restaurantNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.put(REST_URL + RestaurantTestData.NOT_FOUND))
+        perform(MockMvcRequestBuilders.post(REST_URL + RestaurantTestData.NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
