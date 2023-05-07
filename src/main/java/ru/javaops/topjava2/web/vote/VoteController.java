@@ -1,5 +1,7 @@
 package ru.javaops.topjava2.web.vote;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -22,12 +24,24 @@ public class VoteController {
     VoteService service;
     RestaurantService restaurantService;
 
+    @Operation(summary = "Get all restaurants votes amount or votes amount for restaurants between dates",
+            description = "Get all restaurants votes amount OR get votes amount for restaurants between dates if one or both dates are present.",
+            parameters = {
+                    @Parameter(name = "startDate", description = "Start date of range"),
+                    @Parameter(name = "endDate", description = "End date of range")
+            })
     @GetMapping("/")
     public List<VoteAmountTo> getAllVotesAmount(@RequestParam @Nullable LocalDateTime startDateTime,
                                                 @RequestParam @Nullable LocalDateTime endDateTime) {
         return createTos(service.getVotesAmountOfAllRestaurantsBetweenInclusive(startDateTime, endDateTime));
     }
 
+    @Operation(summary = "Get all votes amount for restaurant or votes amount for restaurant between dates",
+            description = "Get all votes amount for restaurant by it's id OR get votes amount for restaurant between dates if one or both dates are present.",
+            parameters = {
+                    @Parameter(name = "startDate", description = "Start date of range"),
+                    @Parameter(name = "endDate", description = "End date of range")
+            })
     @GetMapping("/{restaurantId}")
     public Long getVotesAmount(@PathVariable int restaurantId,
                                @RequestParam @Nullable LocalDateTime startDateTime,

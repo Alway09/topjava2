@@ -1,5 +1,7 @@
 package ru.javaops.topjava2.web.menu;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,12 @@ public class MenuController {
         binder.addValidators(creationDateValidator);
     }
 
+    @Operation(summary = "Get all menus or menus between dates",
+            description = "Get all menus OR get all menus between dates if one or both dates are present.",
+            parameters = {
+                    @Parameter(name = "startDate", description = "Start date of range"),
+                    @Parameter(name = "endDate", description = "End date of range")
+            })
     @GetMapping("/")
     public List<MenuTo> getAll(@RequestParam @Nullable LocalDate startDate,
                                @RequestParam @Nullable LocalDate endDate) {
@@ -50,12 +58,14 @@ public class MenuController {
         return createTos(repository.getAllBetweenInclusive(startDate, endDate));
     }
 
+    @Operation(summary = "Get menu by id")
     @GetMapping("/{id}")
     public MenuTo get(@PathVariable int id) {
         log.info("get menu id={}", id);
         return createTo(repository.getExisted(id));
     }
 
+    @Operation(summary = "Delete menu by id")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
@@ -63,6 +73,7 @@ public class MenuController {
         repository.deleteExisted(id);
     }
 
+    @Operation(summary = "Update menu by id")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable int id, @Valid @RequestBody MenuTo menuTo) {
@@ -76,6 +87,7 @@ public class MenuController {
         repository.save(menu);
     }
 
+    @Operation(summary = "Create menu")
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createWithLocation(@Valid @RequestBody MenuTo menuTo) {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());

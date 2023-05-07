@@ -1,5 +1,6 @@
 package ru.javaops.topjava2.web.vote;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,28 +22,33 @@ public class VoteProfileController {
     VoteService service;
     RestaurantService restaurantService;
 
+    @Operation(summary = "Get all authorized user votes")
     @GetMapping("/")
     public List<VoteTo> getAll() {
         return createTos(service.getAllUserVotes());
     }
 
+    @Operation(summary = "Get all authorized user votes for restaurant by restaurant id")
     @GetMapping("/{restaurantId}")
     public List<VoteTo> getAllForRestaurant(@PathVariable int restaurantId) {
         restaurantService.findById(restaurantId);
         return createTos(service.getAllUserVotesForRestaurant(restaurantId));
     }
 
+    @Operation(summary = "Get actual authorized user vote")
     @GetMapping("/actual")
     public VoteTo getActualVote() {
         return createTo(service.getActualVote());
     }
 
+    @Operation(summary = "Vote for restaurant by restaurant id")
     @PostMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void voteForRestaurant(@PathVariable int restaurantId) {
         service.createOrUpdate(restaurantService.findById(restaurantId));
     }
 
+    @Operation(summary = "Delete actual authorized user vote")
     @DeleteMapping("/")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteActualVote() {
