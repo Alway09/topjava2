@@ -23,13 +23,12 @@ public class MenuTo extends NamedTo {
     @NotNull
     List<@NotNull @Valid Dish> dishes;
 
+    LocalDate actualDate;
 
-    LocalDate creationDate;
-
-    public MenuTo(Integer id, String name, Integer restaurantId, List<Dish> dishes, LocalDate creationDate) {
+    public MenuTo(Integer id, String name, Integer restaurantId, List<Dish> dishes, LocalDate actualDate) {
         super(id, name);
         this.restaurantId = restaurantId;
         this.dishes = dishes;
-        this.creationDate = creationDate;
+        this.actualDate = actualDate;
     }
 }
