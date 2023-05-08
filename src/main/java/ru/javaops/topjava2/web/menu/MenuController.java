@@ -94,7 +94,7 @@ public class MenuController {
         checkNew(menuTo);
 
         Menu created = createFromTo(menuTo);
-        created.setActualDate(requireNonNullElse(menuTo.getCreationDate(), LocalDate.now()));
+        created.setActualDate(requireNonNullElse(menuTo.getActualDate(), LocalDate.now()));
 
         Restaurant restaurant = restaurantService.findById(menuTo.getRestaurantId());
         created.setRestaurant(restaurant);

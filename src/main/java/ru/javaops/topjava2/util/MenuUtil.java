@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MenuUtil {
     public static Menu createFromTo(MenuTo menuTo) {
-        return new Menu(menuTo.getId(), menuTo.getName(), null, menuTo.getDishes(), menuTo.getCreationDate());
+        return new Menu(menuTo.getId(), menuTo.getName(), null, menuTo.getDishes(), menuTo.getActualDate());
 
     }
 
@@ -22,7 +22,7 @@ public class MenuUtil {
         for (Menu menu : menus) {
             menuTos.add(createTo(menu));
         }
-        menuTos.sort(Comparator.comparing(MenuTo::getCreationDate).reversed()
+        menuTos.sort(Comparator.comparing(MenuTo::getActualDate).reversed()
                 .thenComparing(MenuTo::getName));
         return menuTos;
     }
