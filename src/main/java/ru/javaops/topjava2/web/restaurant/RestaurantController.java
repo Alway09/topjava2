@@ -51,6 +51,6 @@ public class RestaurantController {
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
         var restaurant = service.getWithActualMenus(id);
-        return createTo(restaurant, voteService.getActualVotesAmount(id));
+        return restaurant != null ? createTo(restaurant, voteService.getActualVotesAmount(id)) : null;
     }
 }

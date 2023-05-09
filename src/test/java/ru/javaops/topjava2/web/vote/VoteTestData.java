@@ -18,4 +18,5 @@ public class VoteTestData {
 
     public static final long RESTAURANT1_VOTES_AMOUNT = 5;
     public static final long RESTAURANT2_VOTES_AMOUNT = 1;
+    public static final int USER_ALL_VOTES_AMOUNT = 5;
 }

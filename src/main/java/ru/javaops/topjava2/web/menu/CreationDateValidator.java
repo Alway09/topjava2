@@ -17,7 +17,7 @@ public class CreationDateValidator implements org.springframework.validation.Val
     public void validate(Object target, Errors errors) {
         MenuTo menuTo = (MenuTo) target;
         if (menuTo.getActualDate() != null && menuTo.getActualDate().isBefore(LocalDate.now())) {
-            errors.rejectValue("creationDate", "error.creationDate");
+            errors.rejectValue("actualDate", "error.actualDate");
         }
     }
 }

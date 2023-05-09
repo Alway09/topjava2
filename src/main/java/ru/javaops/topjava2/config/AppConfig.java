@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ProblemDetail;
 import ru.javaops.topjava2.util.JsonUtil;
+import ru.javaops.topjava2.web.vote.VoteKeyGenerator;
+import org.springframework.cache.interceptor.KeyGenerator;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -45,5 +47,10 @@ public class AppConfig {
         // ErrorHandling: https://stackoverflow.com/questions/7421474/548473
         objectMapper.addMixIn(ProblemDetail.class, MixIn.class);
         JsonUtil.setMapper(objectMapper);
+    }
+
+    @Bean("voteKeyGenerator")
+    public KeyGenerator keyGenerator() {
+        return new VoteKeyGenerator();
     }
 }

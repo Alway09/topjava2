@@ -2,6 +2,9 @@ package ru.javaops.topjava2.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
 import ru.javaops.topjava2.error.NotFoundException;
@@ -25,6 +28,7 @@ import static ru.javaops.topjava2.web.AuthUser.authUser;
 @Service
 @AllArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = VOTES_CACHE_NAME)
 public class VoteService {
     VoteRepository repository;
 
@@ -32,6 +36,7 @@ public class VoteService {
     private static final LocalDateTime MIN_DATE_TIME = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
     private static final LocalDateTime MAX_DATE_TIME = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
 
+    @CacheEvict(keyGenerator = "voteKeyGenerator")
     public void createOrUpdate(Restaurant restaurant) {
         Objects.requireNonNull(restaurant);
         if (VoteUtil.isVotingInProcess()) {
@@ -67,8 +72,6 @@ public class VoteService {
         Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
         if (vote.isPresent()) {
             return vote.get();
-        } else if (!isVotingInProcess()) {
-            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
         }
         throw new NotFoundException("Actual vote not found");
     }
@@ -84,6 +87,7 @@ public class VoteService {
         return getVotesAmountOfAllRestaurantsBetweenInclusive(votingStart(), votingEnd());
     }
 
+    @Cacheable(keyGenerator = "voteKeyGenerator")
     public List<Vote> getAllUserVotes() {
         log.info("get all votes of user id={}", authId());
         return repository.getAllUserVotes(authId());
@@ -94,6 +98,7 @@ public class VoteService {
         return repository.getAllUserVotesForRestaurant(AuthUser.authId(), restaurantId);
     }
 
+    @CacheEvict(keyGenerator = "voteKeyGenerator")
     public void deleteActualVote() {
         repository.deleteExisted(getActualVote().id());
     }

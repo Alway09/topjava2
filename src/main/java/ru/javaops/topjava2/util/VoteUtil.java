@@ -20,6 +20,8 @@ import java.util.function.Predicate;
 @UtilityClass
 @Slf4j
 public class VoteUtil {
+    public static final String VOTES_CACHE_NAME = "votes";
+
     private static LocalTime votingStart;
 
     private static LocalTime votingEnd;

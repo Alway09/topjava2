@@ -1,18 +1,24 @@
 package ru.javaops.topjava2.web.restaurant;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
+import static ru.javaops.topjava2.util.VoteUtil.isVotingInProcess;
 import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.TestData.RESTAURANT3;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.*;
@@ -21,24 +27,40 @@ import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 public class RestaurantControllerTest extends AbstractControllerTest {
     private static final String REST_URL = RestaurantController.REST_URL + "/";
 
+    @Autowired
+    CacheManager cacheManager;
+
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getAll() throws Exception {
+        List<Restaurant> restaurantList;
+        if (isVotingInProcess()) {
+            restaurantList = new ArrayList<>(List.of(RESTAURANT1, RESTAURANT2));
+        } else {
+            restaurantList = new ArrayList<>(List.of(RESTAURANT2, RESTAURANT1));
+        }
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(List.of(RESTAURANT2, RESTAURANT1))));
+                .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTos(restaurantList)));
+
+        RESTAURANT_MATCHER.assertMatch(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getAllWithActualMenus", List.class),
+                List.of(RESTAURANT1, RESTAURANT2));
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getList() throws Exception {
+        List<Restaurant> restaurantList = new ArrayList<>(List.of(RESTAURANT2, RESTAURANT1));
         perform(MockMvcRequestBuilders.get(REST_URL + "/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT2, RESTAURANT1)));
+                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(restaurantList));
+
+        RESTAURANT_MATCHER.assertMatch(restaurantList,
+                cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getListWithActualMenus", List.class));
     }
 
     @Test
@@ -49,6 +71,9 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_TO_MATCHER_EXCLUDE_VOTES_AMOUNT.contentJson(getTo(RESTAURANT1)));
+
+        RESTAURANT_MATCHER.assertMatch(RESTAURANT1,
+                cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1_ID, Restaurant.class));
     }
 
     @Test
@@ -56,8 +81,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -65,14 +89,15 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     void get_notActual() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT3_ID))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString("Entity with id=" + RESTAURANT3_ID + " not found")));
+                .andExpect(status().isOk());
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getByName() throws Exception {
         getByName(RESTAURANT1.getName(), List.of(getTo(RESTAURANT1)));
+        RESTAURANT_MATCHER.assertMatch(RESTAURANT1,
+                cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1.getName(), Restaurant.class));
     }
 
     @Test

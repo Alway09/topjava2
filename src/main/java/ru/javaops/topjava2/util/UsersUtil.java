@@ -7,6 +7,7 @@ import ru.javaops.topjava2.to.UserTo;
 
 @UtilityClass
 public class UsersUtil {
+    public static final String PROFILE_CACHE_NAME = "profile";
 
     public static User createNewFromTo(UserTo userTo) {
         return new User(null, userTo.getName(), userTo.getEmail().toLowerCase(), userTo.getPassword(), Role.USER);

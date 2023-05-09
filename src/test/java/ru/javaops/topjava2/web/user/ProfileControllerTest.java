@@ -2,6 +2,7 @@ package ru.javaops.topjava2.web.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
@@ -14,9 +15,11 @@ import ru.javaops.topjava2.util.UsersUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.util.UsersUtil.PROFILE_CACHE_NAME;
 import static ru.javaops.topjava2.web.user.ProfileController.REST_URL;
 import static ru.javaops.topjava2.web.user.UserTestData.*;
 
@@ -25,6 +28,9 @@ class ProfileControllerTest extends AbstractControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    CacheManager cacheManager;
+
     @Test
     @WithUserDetails(value = USER_MAIL)
     void get() throws Exception {
@@ -32,6 +38,8 @@ class ProfileControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user));
+
+        USER_MATCHER.assertMatch(user, cacheManager.getCache(PROFILE_CACHE_NAME).get(USER_ID, User.class));
     }
 
     @Test
@@ -46,6 +54,7 @@ class ProfileControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL))
                 .andExpect(status().isNoContent());
         USER_MATCHER.assertMatch(userRepository.findAll(), admin, user2, guest);
+        assertNull(cacheManager.getCache(PROFILE_CACHE_NAME).get(USER_ID, User.class));
     }
 
     @Test
@@ -75,6 +84,7 @@ class ProfileControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userRepository.getExisted(USER_ID), UsersUtil.updateFromTo(new User(user), updatedTo));
+        assertNull(cacheManager.getCache(PROFILE_CACHE_NAME).get(USER_ID, User.class));
     }
 
     @Test

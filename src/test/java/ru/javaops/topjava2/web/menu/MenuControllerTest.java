@@ -1,7 +1,9 @@
 package ru.javaops.topjava2.web.menu;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -15,13 +17,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javaops.topjava2.util.MenuUtil.*;
+import static ru.javaops.topjava2.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
 import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.menu.MenuTestData.*;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javaops.topjava2.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
 
@@ -30,6 +34,9 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Autowired
     MenuRepository repository;
+
+    @Autowired
+    CacheManager cacheManager;
 
     // ===============================CREATE===============================
     @Test
@@ -40,6 +47,9 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         newMenu.setId(MENU_NEW_ID);
         MENU_MATCHER.assertMatch(repository.getExisted(MENU_NEW_ID), createFromTo(newMenu));
+
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1.getName()));
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1_ID));
     }
 
     @Test
@@ -78,7 +88,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("\"restaurantId\":\"must be greater than or equal to 1\"")))
                 .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")))
-                .andExpect(content().string(containsString("\"creationDate\":\"Creation date must be current or in future\"")));
+                .andExpect(content().string(containsString("\"actualDate\":\"Actual date must be current or in future\"")));
 
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -153,6 +163,9 @@ public class MenuControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         MenuTo updated = getUpdated();
         update(updated, status().isNoContent());
+
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1.getName()));
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1_ID));
     }
 
     @Test
@@ -192,7 +205,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("\"dishes[0].name\":\"must not be blank\"")))
                 .andExpect(content().string(containsString("\"name\":\"size must be between 2 and 128\"")))
-                .andExpect(content().string(containsString("\"creationDate\":\"Creation date must be current or in future\"")));
+                .andExpect(content().string(containsString("\"actualDate\":\"Actual date must be current or in future\"")));
 
         perform(MockMvcRequestBuilders.put(REST_URL + MENU1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -221,6 +234,8 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertFalse(repository.findById(MENU2_ID).isPresent());
+
+        assertEquals(0L, ((Cache) cacheManager.getCache(RESTAURANTS_CACHE_NAME).getNativeCache()).estimatedSize());
     }
 
     @Test

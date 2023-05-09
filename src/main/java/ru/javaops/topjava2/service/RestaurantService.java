@@ -2,6 +2,8 @@ package ru.javaops.topjava2.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.javaops.topjava2.error.NotFoundException;
@@ -16,9 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import static ru.javaops.topjava2.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
+
 @Service
 @AllArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = RESTAURANTS_CACHE_NAME)
 public class RestaurantService {
     RestaurantRepository repository;
     MenuRepository menuRepository;
@@ -30,10 +35,11 @@ public class RestaurantService {
         return fetchMenus(restaurant);
     }
 
+    @Cacheable
     public Restaurant getWithActualMenus(int id) {
         log.info("get restaurant id={} with actual menus", id);
         Restaurant restaurant = repository.getWithMenusWithActualDate(id, LocalDate.now())
-                .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
+                .orElse(null);
         return fetchMenus(restaurant);
     }
 
@@ -42,6 +48,7 @@ public class RestaurantService {
         return fetchMenus(repository.getByNameWithMenus(name).orElse(null));
     }
 
+    @Cacheable
     public Restaurant getByNameWithActualMenus(String name) {
         log.info("get restaurant with name={}", name);
         return fetchMenus(repository.getByNameWithMenusWithActualDate(name, LocalDate.now()).orElse(null));
@@ -52,6 +59,7 @@ public class RestaurantService {
         return fetchMenus(repository.findAll());
     }
 
+    @Cacheable(key = "#root.methodName")
     public List<Restaurant> getAllWithActualMenus() {
         log.info("get all restaurants with actual menus");
         return fetchMenus(repository.getAllWithMenusWithActualDate(LocalDate.now()));
@@ -62,6 +70,7 @@ public class RestaurantService {
         return repository.findAll(Sort.by(Sort.Direction.DESC, "name"));
     }
 
+    @Cacheable(key = "#root.methodName")
     public List<Restaurant> getListWithActualMenus() {
         log.info("get all restaurants");
         return repository.getListWithMenusWithActualDate(LocalDate.now());

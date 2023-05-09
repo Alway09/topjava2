@@ -74,7 +74,7 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
         } else {
             perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
                     .andDo(print())
-                    .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
+                    .andExpect(content().string(containsString("Actual vote not found")));
         }
     }
 
@@ -112,8 +112,8 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
         } else {
             perform(MockMvcRequestBuilders.delete(REST_URL))
                     .andDo(print())
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().string(containsString("Actual vote not found")));
         }
 
     }

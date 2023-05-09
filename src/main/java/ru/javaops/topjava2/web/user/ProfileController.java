@@ -3,6 +3,9 @@ package ru.javaops.topjava2.web.user;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +20,19 @@ import ru.javaops.topjava2.web.AuthUser;
 
 import java.net.URI;
 
+import static ru.javaops.topjava2.util.UsersUtil.PROFILE_CACHE_NAME;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = ProfileController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-// TODO: cache only most requested data!
+@CacheConfig(cacheNames = PROFILE_CACHE_NAME)
 public class ProfileController extends AbstractUserController {
     static final String REST_URL = "/api/profile";
 
     @Operation(summary = "Get authorized user information")
+    @Cacheable(key = "#authUser.authId()")
     @GetMapping
     public User get(@AuthenticationPrincipal AuthUser authUser) {
         log.info("get {}", authUser);
@@ -35,6 +40,7 @@ public class ProfileController extends AbstractUserController {
     }
 
     @Operation(summary = "Delete authorized user")
+    @CacheEvict(key = "#authUser.authId()")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal AuthUser authUser) {
@@ -54,6 +60,7 @@ public class ProfileController extends AbstractUserController {
     }
 
     @Operation(summary = "Update authorized user")
+    @CacheEvict(key = "#authUser.authId()")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional

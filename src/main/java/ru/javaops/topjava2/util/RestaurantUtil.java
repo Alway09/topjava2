@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RestaurantUtil {
+    public static final String RESTAURANTS_CACHE_NAME = "restaurants";
+
     public static RestaurantTo createTo(Restaurant restaurant, Long votesAmount) {
         return new RestaurantTo(restaurant.getId(), restaurant.getName(), restaurant.getMenus(), votesAmount);
     }
