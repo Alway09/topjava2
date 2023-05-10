@@ -103,7 +103,7 @@ public class MenuController {
             @CacheEvict(key = "#menuTo.restaurantId")
     })
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createWithLocation(@Valid @RequestBody MenuTo menuTo) {
+    public ResponseEntity<Menu> createWithLocation(@Valid @RequestBody MenuTo menuTo) {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());
         checkNew(menuTo);
 
@@ -117,6 +117,6 @@ public class MenuController {
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).build();
+        return ResponseEntity.created(uriOfNewResource).body(created);
     }
 }

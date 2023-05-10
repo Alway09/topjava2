@@ -37,7 +37,7 @@ public class VoteService {
     private static final LocalDateTime MAX_DATE_TIME = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
 
     @CacheEvict(keyGenerator = "voteKeyGenerator")
-    public void createOrUpdate(Restaurant restaurant) {
+    public Vote createOrUpdate(Restaurant restaurant) {
         Objects.requireNonNull(restaurant);
         if (VoteUtil.isVotingInProcess()) {
             Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
@@ -45,13 +45,12 @@ public class VoteService {
                 log.info("updating vote for restaurant {}, userId={}", restaurant, authId());
                 vote.get().setRestaurant(restaurant);
                 vote.get().setDateTime(LocalDateTime.now());
-                repository.save(vote.get());
+                return repository.save(vote.get());
             } else {
                 log.info("creating vote for restaurant {}, userId={}", restaurant, authId());
                 Vote newVote = new Vote(null, authUser(), restaurant, LocalDateTime.now());
-                repository.save(newVote);
+                return repository.save(newVote);
             }
-            return;
         }
 
         throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());

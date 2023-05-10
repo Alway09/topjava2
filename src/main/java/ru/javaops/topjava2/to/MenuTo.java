@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
-import org.hibernate.validator.constraints.Range;
 import ru.javaops.topjava2.model.Dish;
 
 import java.time.LocalDate;

@@ -43,9 +43,8 @@ public class VoteProfileController {
 
     @Operation(summary = "Vote for restaurant by restaurant id")
     @PostMapping("/{restaurantId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void voteForRestaurant(@PathVariable int restaurantId) {
-        service.createOrUpdate(restaurantService.findById(restaurantId));
+    public VoteTo voteForRestaurant(@PathVariable int restaurantId) {
+        return createTo(service.createOrUpdate(restaurantService.findById(restaurantId)));
     }
 
     @Operation(summary = "Delete actual authorized user vote")

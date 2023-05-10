@@ -84,7 +84,7 @@ public class VoteProfileControllerTest extends AbstractControllerTest {
         if (VoteUtil.isVotingInProcess()) {
             perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
                     .andDo(print())
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().isOk());
         } else {
             perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
                     .andDo(print())

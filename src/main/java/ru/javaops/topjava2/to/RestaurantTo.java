@@ -1,7 +1,5 @@
 package ru.javaops.topjava2.to;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

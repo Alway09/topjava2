@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.service.RestaurantService;
 import ru.javaops.topjava2.service.VoteService;
 import ru.javaops.topjava2.to.CreateRestaurantTo;

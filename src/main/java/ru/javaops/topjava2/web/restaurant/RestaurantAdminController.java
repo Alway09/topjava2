@@ -24,7 +24,6 @@ import static ru.javaops.topjava2.util.RestaurantUtil.*;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 
-// TODO: cashing
 @RestController
 @RequestMapping(value = RestaurantAdminController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -69,14 +68,14 @@ public class RestaurantAdminController {
 
     @Operation(summary = "Create restaurant")
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createWithLocation(@Valid @RequestBody CreateRestaurantTo restaurantTo) {
+    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody CreateRestaurantTo restaurantTo) {
         log.info("create restaurant {}", restaurantTo);
         checkNew(restaurantTo);
         Restaurant created = service.saveOrUpdate(createFromTo(restaurantTo));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).build();
+        return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
     @Operation(summary = "Update restaurant by id")
