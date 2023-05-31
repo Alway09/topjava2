@@ -3,17 +3,17 @@ package ru.javaops.topjava2.to;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Value
 @EqualsAndHashCode
 public class VoteTo {
     Integer restaurantId;
 
-    LocalDateTime dateTime;
+    LocalDate date;
 
-    public VoteTo(Integer restaurantId, LocalDateTime dateTime) {
+    public VoteTo(Integer restaurantId, LocalDate date) {
         this.restaurantId = restaurantId;
-        this.dateTime = dateTime;
+        this.date = date;
     }
 }

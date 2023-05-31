@@ -6,14 +6,12 @@ import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.model.Vote;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import static ru.javaops.topjava2.web.menu.MenuTestData.*;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.*;
-import static ru.javaops.topjava2.web.user.UserTestData.admin;
 import static ru.javaops.topjava2.web.user.UserTestData.user;
 import static ru.javaops.topjava2.web.vote.VoteTestData.*;
 
@@ -24,12 +22,11 @@ public class TestData {
     public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Сациви", null);
     public static final Restaurant RESTAURANT3 = new Restaurant(RESTAURANT3_ID, "Густав и Густав", null);
 
-    public static final Vote VOTE1 = new Vote(VOTE1_ID, user, RESTAURANT1, LocalDateTime.of(2023, 4, 4, 9, 0, 0));
-    public static final Vote VOTE2 = new Vote(VOTE2_ID, user, RESTAURANT1, LocalDateTime.of(2023, 4, 5, 9, 0, 0));
-    public static final Vote VOTE3 = new Vote(VOTE3_ID, user, RESTAURANT1, LocalDateTime.of(2023, 4, 6, 9, 0, 0));
-    public static final Vote VOTE4 = new Vote(VOTE4_ID, user, RESTAURANT2, LocalDateTime.of(2023, 4, 7, 9, 0, 0));
-    public static final Vote VOTE5 = new Vote(VOTE5_ID, user, RESTAURANT1, LocalDateTime.now());
-    public static final Vote VOTE6 = new Vote(VOTE6_ID, admin, RESTAURANT1, LocalDateTime.now());
+    public static final Vote VOTE1 = new Vote(VOTE1_ID, user, RESTAURANT1, LocalDate.of(2023, 4, 4));
+    public static final Vote VOTE2 = new Vote(VOTE2_ID, user, RESTAURANT1, LocalDate.of(2023, 4, 5));
+    public static final Vote VOTE3 = new Vote(VOTE3_ID, user, RESTAURANT1, LocalDate.of(2023, 4, 6));
+    public static final Vote VOTE4 = new Vote(VOTE4_ID, user, RESTAURANT2, LocalDate.of(2023, 4, 7));
+    public static final Vote VOTE5 = new Vote(VOTE5_ID, user, RESTAURANT1, LocalDate.now());
 
     public static final Menu MENU1 = new Menu(MENU1_ID, "Меню дня", RESTAURANT1, null, LocalDate.now());
     public static final Menu MENU2 = new Menu(MENU2_ID, "Меню дня", RESTAURANT2, null, LocalDate.now());
@@ -67,5 +64,4 @@ public class TestData {
         RESTAURANT2.setMenus(List.of(MENU2));
         RESTAURANT3.setMenus(List.of(MENU3));
     }
-
 }

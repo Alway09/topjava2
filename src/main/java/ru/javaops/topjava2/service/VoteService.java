@@ -9,21 +9,16 @@ import org.springframework.stereotype.Service;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
 import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
+import ru.javaops.topjava2.model.User;
 import ru.javaops.topjava2.model.Vote;
 import ru.javaops.topjava2.repository.VoteRepository;
-import ru.javaops.topjava2.util.VoteUtil;
-import ru.javaops.topjava2.web.AuthUser;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.util.Objects.requireNonNullElse;
 import static ru.javaops.topjava2.util.VoteUtil.*;
-import static ru.javaops.topjava2.web.AuthUser.authId;
-import static ru.javaops.topjava2.web.AuthUser.authUser;
 
 @Service
 @AllArgsConstructor
@@ -33,72 +28,56 @@ public class VoteService {
     VoteRepository repository;
 
     public static final String VOTING_NOT_COINCIDENCE_MESSAGE = "Voting time is out.";
-    private static final LocalDateTime MIN_DATE_TIME = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
-    private static final LocalDateTime MAX_DATE_TIME = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
 
-    @CacheEvict(keyGenerator = "voteKeyGenerator")
-    public Vote createOrUpdate(Restaurant restaurant) {
+    @CacheEvict(key = "#user.id()")
+    public Vote createOrUpdate(Restaurant restaurant, User user) throws IllegalArgumentException {
         Objects.requireNonNull(restaurant);
-        if (VoteUtil.isVotingInProcess()) {
-            Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
-            if (vote.isPresent()) {
-                log.info("updating vote for restaurant {}, userId={}", restaurant, authId());
+        Optional<Vote> vote = repository.findUserVote(user.id(), LocalDate.now());
+        if(vote.isPresent()){
+            if (isVotingInProcess()) {
+                log.info("updating vote for restaurant {}, userId={}", restaurant, user.id());
                 vote.get().setRestaurant(restaurant);
-                vote.get().setDateTime(LocalDateTime.now());
+                vote.get().setDate(LocalDate.now());
                 return repository.save(vote.get());
             } else {
-                log.info("creating vote for restaurant {}, userId={}", restaurant, authId());
-                Vote newVote = new Vote(null, authUser(), restaurant, LocalDateTime.now());
-                return repository.save(newVote);
+                throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
             }
         }
 
-        throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
+        return create(restaurant, user);
     }
 
-    public long getVotesAmountBetweenInclusive(int restaurantId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
-        endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
-        log.info("get votes amount for restaurant id={} for user id={} between {} and {}", restaurantId, authId(), startDateTime, endDateTime);
-        return repository.getVotesAmountBetweenInclusive(restaurantId, startDateTime, endDateTime);
+    public Vote create(Restaurant restaurant, User user) {
+        log.info("creating vote for restaurant {}, userId={}", restaurant, user.id());
+        Vote newVote = new Vote(null, user, restaurant, LocalDate.now());
+        return repository.save(newVote);
     }
 
-    public long getActualVotesAmount(int restaurantId) {
-        return getVotesAmountBetweenInclusive(restaurantId, votingStart(), votingEnd());
-    }
-
-    public Vote getActualVote() {
-        Optional<Vote> vote = repository.findUserVote(authId(), votingStart(), votingEnd());
+    public Vote getActualVote(int userId) throws NotFoundException {
+        Optional<Vote> vote = repository.findUserVote(userId, LocalDate.now());
         if (vote.isPresent()) {
             return vote.get();
         }
         throw new NotFoundException("Actual vote not found");
     }
 
-    public Map<Integer, Long> getVotesAmountOfAllRestaurantsBetweenInclusive(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        startDateTime = requireNonNullElse(startDateTime, MIN_DATE_TIME);
-        endDateTime = requireNonNullElse(endDateTime, MAX_DATE_TIME);
-        log.info("get votes amount for all restaurants for user id={} between {} and {}", authId(), startDateTime, endDateTime);
-        return repository.getVotesAmountOfAllRestaurantsBetweenInclusive(startDateTime, endDateTime);
+    @Cacheable(key = "#userId")
+    public List<Vote> getAllUserVotes(int userId) {
+        log.info("get all votes of user id={}", userId);
+        return repository.getAllUserVotes(userId);
     }
 
-    public Map<Integer, Long> getActualVotesAmountOfAllRestaurants() {
-        return getVotesAmountOfAllRestaurantsBetweenInclusive(votingStart(), votingEnd());
+    public List<Vote> getAllUserVotesForRestaurant(int restaurantId, int userId) {
+        log.info("get votes of user id={} for restaurant  id={}", userId, restaurantId);
+        return repository.getAllUserVotesForRestaurant(userId, restaurantId);
     }
 
-    @Cacheable(keyGenerator = "voteKeyGenerator")
-    public List<Vote> getAllUserVotes() {
-        log.info("get all votes of user id={}", authId());
-        return repository.getAllUserVotes(authId());
-    }
-
-    public List<Vote> getAllUserVotesForRestaurant(int restaurantId) {
-        log.info("get votes of user id={} for restaurant  id={}", authId(), restaurantId);
-        return repository.getAllUserVotesForRestaurant(AuthUser.authId(), restaurantId);
-    }
-
-    @CacheEvict(keyGenerator = "voteKeyGenerator")
-    public void deleteActualVote() {
-        repository.deleteExisted(getActualVote().id());
+    @CacheEvict(key = "#userId")
+    public void deleteActualVote(int userId) throws IllegalArgumentException {
+        if(isVotingInProcess()){
+            repository.deleteExisted(getActualVote(userId).id());
+        } else {
+            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
+        }
     }
 }

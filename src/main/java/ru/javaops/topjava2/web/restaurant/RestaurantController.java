@@ -14,8 +14,7 @@ import ru.javaops.topjava2.to.RestaurantTo;
 
 import java.util.List;
 
-import static ru.javaops.topjava2.util.RestaurantUtil.createTo;
-import static ru.javaops.topjava2.util.RestaurantUtil.createTos;
+import static ru.javaops.topjava2.util.RestaurantUtil.*;
 
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,16 +32,15 @@ public class RestaurantController {
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
             var restaurant = service.getByNameWithActualMenus(name);
-            return restaurant == null ? List.of() : List.of(createTo(restaurant, voteService.getActualVotesAmount(restaurant.id())));
+            return restaurant == null ? List.of() : List.of(createOutcomeTo(restaurant));
         }
-        return createTos(service.getAllWithActualMenus(),
-                voteService.getActualVotesAmountOfAllRestaurants());
+        return createOutcomeTos(service.getAllWithActualMenus());
     }
 
     @Operation(summary = "Get list of all restaurants with actual menus", description = "Each element contains only name and id.")
     @GetMapping("/list")
     public List<CreateRestaurantTo> getList() {
-        return createTos(service.getListWithActualMenus());
+        return createIncomeTos(service.getListWithActualMenus());
     }
 
     @Operation(summary = "Get restaurant by id", description = "Get restaurant with it's actual menus and actual votes amount by id.")
@@ -50,6 +48,6 @@ public class RestaurantController {
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
         var restaurant = service.getWithActualMenus(id);
-        return restaurant != null ? createTo(restaurant, voteService.getActualVotesAmount(id)) : null;
+        return restaurant != null ? createOutcomeTo(restaurant) : null;
     }
 }

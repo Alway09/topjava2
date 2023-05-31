@@ -36,12 +36,12 @@ VALUES (1, 'Голубцы', 250),
        (3, 'Брускеты с паштетом', 350),
        (3, 'Голубцы', 250);
 
-INSERT INTO VOTE (user_id, restaurant_id, date_time)
-VALUES (1, 1, '2023-04-04T09:00:00'),
-       (1, 1, '2023-04-05T09:00:00'),
-       (1, 1, '2023-04-06T09:00:00'),
-       (1, 2, '2023-04-07T09:00:00');
+INSERT INTO VOTE (user_id, restaurant_id, date)
+VALUES (1, 1, '2023-04-04'),
+       (1, 1, '2023-04-05'),
+       (1, 1, '2023-04-06'),
+       (1, 2, '2023-04-07');
 
-INSERT INTO VOTE (user_id, restaurant_id, date_time)
+INSERT INTO VOTE (user_id, restaurant_id, date)
 VALUES (1, 1, CURRENT_TIMESTAMP()),
        (2, 1, CURRENT_TIMESTAMP());

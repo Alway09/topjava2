@@ -3,7 +3,6 @@ package ru.javaops.topjava2.util;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.javaops.topjava2.model.Vote;
-import ru.javaops.topjava2.to.VoteAmountTo;
 import ru.javaops.topjava2.to.VoteTo;
 
 import java.io.FileInputStream;
@@ -12,10 +11,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Properties;
 
 @UtilityClass
 @Slf4j
@@ -78,14 +77,8 @@ public class VoteUtil {
         votingEnd = value;
     }
 
-    // https://howtodoinjava.com/java8/java-stream-distinct-examples/
-    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> map = new ConcurrentHashMap<>();
-        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }
-
     public static VoteTo createTo(Vote vote) {
-        return new VoteTo(vote.getRestaurant().getId(), vote.getDateTime());
+        return new VoteTo(vote.getRestaurant().getId(), vote.getDate());
     }
 
     public static List<VoteTo> createTos(Iterable<Vote> votes) {
@@ -93,16 +86,7 @@ public class VoteUtil {
         for (Vote vote : votes) {
             voteTos.add(createTo(vote));
         }
-        voteTos.sort(Comparator.comparing(VoteTo::getDateTime).reversed());
+        voteTos.sort(Comparator.comparing(VoteTo::getDate).reversed());
         return voteTos;
-    }
-
-    public static List<VoteAmountTo> createTos(Map<Integer, Long> votes) {
-        List<VoteAmountTo> voteAmountTos = new ArrayList<>();
-        for (Integer restaurantId : votes.keySet()) {
-            voteAmountTos.add(new VoteAmountTo(restaurantId, votes.getOrDefault(restaurantId, 0L)));
-        }
-        voteAmountTos.sort(Comparator.comparing(VoteAmountTo::getVotesAmount).reversed());
-        return voteAmountTos;
     }
 }

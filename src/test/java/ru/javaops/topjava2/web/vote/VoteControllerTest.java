@@ -4,61 +4,53 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.javaops.topjava2.service.VoteService;
+import ru.javaops.topjava2.util.VoteUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 import ru.javaops.topjava2.web.restaurant.RestaurantTestData;
 
-import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.util.VoteUtil.createTo;
 import static ru.javaops.topjava2.util.VoteUtil.createTos;
-import static ru.javaops.topjava2.web.TestData.NOT_FOUND_EXCEPTION_MESSAGE;
+import static ru.javaops.topjava2.web.TestData.*;
 import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
-import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT2_ID;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT3_ID;
 import static ru.javaops.topjava2.web.user.UserTestData.USER_MAIL;
-import static ru.javaops.topjava2.web.vote.VoteTestData.*;
+import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE_TO_MATCHER_EXCLUDE_DATE;
 
 public class VoteControllerTest extends AbstractControllerTest {
     private static final String REST_URL = VoteController.REST_URL + "/";
 
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getAllVotesAmount() throws Exception {
+    void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_AMOUNT_TO_MATCHER.contentJson(createTos(Map.of(RESTAURANT1_ID, RESTAURANT1_VOTES_AMOUNT, RESTAURANT2_ID, RESTAURANT2_VOTES_AMOUNT))));
+                .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE
+                        .contentJson(createTos(List.of(VOTE5, VOTE4, VOTE3, VOTE2, VOTE1))));
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getAllVotesAmountBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL)
-                .param("startDateTime", LocalDate.now().atStartOfDay().toString())
-                .param("endDateTime", LocalDate.now().atStartOfDay().plusHours(24).toString()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_AMOUNT_TO_MATCHER.contentJson(createTos(Map.of(RESTAURANT1_ID, 2L, RESTAURANT2_ID, 0L))));
-    }
-
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void getVotesAmount() throws Exception {
+    public void getAllForRestaurant() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(LONG_MATCHER.contentJson(RESTAURANT1_VOTES_AMOUNT));
+                .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE
+                        .contentJson(createTos(List.of(VOTE5, VOTE3, VOTE2, VOTE1))));
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getVotesAmount_restaurantNotFound() throws Exception {
+    public void getAllForRestaurant_restaurantNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -66,21 +58,62 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = USER_MAIL)
-    void getVotesAmountBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID)
-                .param("startDateTime", LocalDate.now().atStartOfDay().toString())
-                .param("endDateTime", LocalDate.now().atStartOfDay().plusHours(24).toString()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(LONG_MATCHER.contentJson(2L));
-    }
-
-    @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getActualVote() throws Exception {
+        //if (VoteUtil.isVotingInProcess()) {
+            perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
+                    .andDo(print())
+                    .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE.contentJson(createTo(VOTE5)));
+        /*} else {
+            perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
+                    .andDo(print())
+                    .andExpect(content().string(containsString("Actual vote not found")));
+        }*/
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    public void voteForRestaurant() throws Exception {
+        if (VoteUtil.isVotingInProcess()) {
+            perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        } else {
+            perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT3_ID))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString(VoteService.VOTING_NOT_COINCIDENCE_MESSAGE)));
+        }
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    public void voteForRestaurant_restaurantNotFound() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL + RestaurantTestData.NOT_FOUND))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void deleteActualVote() throws Exception {
+        if (VoteUtil.isVotingInProcess()) {
+            perform(MockMvcRequestBuilders.delete(REST_URL))
+                    .andDo(print())
+                    .andExpect(status().isNoContent());
+        } else {
+            perform(MockMvcRequestBuilders.delete(REST_URL))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString("Voting time is out.")));
+        }
     }
 }

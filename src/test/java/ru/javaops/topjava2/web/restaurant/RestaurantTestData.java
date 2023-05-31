@@ -9,7 +9,7 @@ import ru.javaops.topjava2.web.MatcherFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.javaops.topjava2.util.RestaurantUtil.createTo;
+import static ru.javaops.topjava2.util.RestaurantUtil.createOutcomeTo;
 import static ru.javaops.topjava2.web.TestData.RESTAURANT1;
 
 public class RestaurantTestData {
@@ -32,7 +32,7 @@ public class RestaurantTestData {
         }
 
         restaurantCopy.setMenus(menusCopy);
-        return createTo(restaurantCopy, 0L);
+        return createOutcomeTo(restaurantCopy);
     }
 
     public static List<RestaurantTo> getTos(List<Restaurant> restaurants) {

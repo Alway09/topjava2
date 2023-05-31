@@ -1,27 +1,21 @@
 package ru.javaops.topjava2.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 @Embeddable
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
-public class Dish implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class Dish {
     @NotBlank
-    String name;
+    private String name;
 
     @Min(0)
-    Integer price;
+    private Integer price;
 
     public Dish(String name, Integer price) {
         this.name = name;

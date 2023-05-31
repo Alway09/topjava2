@@ -7,29 +7,27 @@ import ru.javaops.topjava2.to.RestaurantTo;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public class RestaurantUtil {
     public static final String RESTAURANTS_CACHE_NAME = "restaurants";
 
-    public static RestaurantTo createTo(Restaurant restaurant, Long votesAmount) {
-        return new RestaurantTo(restaurant.getId(), restaurant.getName(), restaurant.getMenus(), votesAmount);
+    public static RestaurantTo createOutcomeTo(Restaurant restaurant) {
+        return new RestaurantTo(restaurant.getId(), restaurant.getName(), restaurant.getMenus());
     }
 
-    public static CreateRestaurantTo createTo(Restaurant restaurant) {
+    public static CreateRestaurantTo createIncomeTo(Restaurant restaurant) {
         return new CreateRestaurantTo(restaurant.getId(), restaurant.getName());
     }
 
-    public static List<RestaurantTo> createTos(Collection<Restaurant> restaurants, Map<Integer, Long> restaurantVotes) {
+    public static List<RestaurantTo> createOutcomeTos(Collection<Restaurant> restaurants) {
         return restaurants.stream()
-                .map(restaurant -> createTo(restaurant, restaurantVotes.getOrDefault(restaurant.getId(), 0L)))
-                .sorted(Comparator.comparing(RestaurantTo::getVotesAmount).reversed()
-                        .thenComparing(RestaurantTo::getName))
+                .map(RestaurantUtil::createOutcomeTo)
+                .sorted(Comparator.comparing(RestaurantTo::getName))
                 .toList();
     }
 
-    public static List<CreateRestaurantTo> createTos(Collection<Restaurant> restaurants) {
-        return restaurants.stream().map(RestaurantUtil::createTo).toList();
+    public static List<CreateRestaurantTo> createIncomeTos(Collection<Restaurant> restaurants) {
+        return restaurants.stream().map(RestaurantUtil::createIncomeTo).toList();
     }
 
     public static Restaurant createFromTo(CreateRestaurantTo restaurantTo) {

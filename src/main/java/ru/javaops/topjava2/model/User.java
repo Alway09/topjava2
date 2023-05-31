@@ -16,8 +16,6 @@ import org.springframework.util.CollectionUtils;
 import ru.javaops.topjava2.HasIdAndEmail;
 import ru.javaops.topjava2.util.validation.NoHtml;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.*;
 
 @Entity
@@ -25,10 +23,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends NamedEntity implements HasIdAndEmail, Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class User extends NamedEntity implements HasIdAndEmail {
     @Column(name = "email", nullable = false, unique = true)
     @Email
     @NotBlank

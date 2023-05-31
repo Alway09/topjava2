@@ -1,13 +1,14 @@
 package ru.javaops.topjava2.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import ru.javaops.topjava2.HasId;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -15,14 +16,11 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Restaurant extends NamedEntity implements HasId, Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class Restaurant extends NamedEntity implements HasId {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OrderBy("actualDate DESC, name ASC")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    List<Menu> menus;
+    private List<Menu> menus;
 
     public Restaurant(Integer id, String name, List<Menu> menus) {
         super(id, name);

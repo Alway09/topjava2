@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.service.RestaurantService;
-import ru.javaops.topjava2.service.VoteService;
 import ru.javaops.topjava2.to.CreateRestaurantTo;
 import ru.javaops.topjava2.to.RestaurantTo;
 
@@ -30,7 +29,6 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
 @AllArgsConstructor
 public class RestaurantAdminController {
     public static final String REST_URL = "/api/admin/restaurants";
-    private VoteService voteService;
     private RestaurantService service;
 
     @Operation(summary = "Get all restaurants or one restaurant by name",
@@ -40,23 +38,22 @@ public class RestaurantAdminController {
     public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
         if (name != null) {
             var restaurant = service.getByName(name);
-            return restaurant == null ? List.of() : List.of(createTo(restaurant, voteService.getActualVotesAmount(restaurant.id())));
+            return restaurant == null ? List.of() : List.of(createOutcomeTo(restaurant));
         }
-        return createTos(service.getAll(),
-                voteService.getActualVotesAmountOfAllRestaurants());
+        return createOutcomeTos(service.getAll());
     }
 
     @Operation(summary = "Get list of all restaurants", description = "Each element contains only name and id.")
     @GetMapping("/list")
     public List<CreateRestaurantTo> getList() {
-        return createTos(service.getList());
+        return createIncomeTos(service.getList());
     }
 
     @Operation(summary = "Get restaurant by id", description = "Get restaurant with it's menus and actual votes amount by id.")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         var restaurant = service.get(id);
-        return createTo(restaurant, voteService.getActualVotesAmount(id));
+        return createOutcomeTo(restaurant);
     }
 
     @Operation(summary = "Delete restaurant by id", description = "Restaurant menus deletes cascading.")

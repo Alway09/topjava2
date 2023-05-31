@@ -14,11 +14,8 @@ import java.util.List;
 public class RestaurantTo extends NamedTo {
     List<Menu> menus;
 
-    Long votesAmount;
-
-    public RestaurantTo(Integer id, String name, @NonNull List<Menu> menus, @NonNull Long votesAmount) {
+    public RestaurantTo(Integer id, String name, @NonNull List<Menu> menus) {
         super(id, name);
         this.menus = menus;
-        this.votesAmount = votesAmount;
     }
 }
