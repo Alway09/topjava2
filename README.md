@@ -52,7 +52,7 @@ As a result, provide a link to github repository. It should contain the code, RE
 В качестве результата предоставить ссылку на github репозиторий. Он должен содержать код приложения, README.md с документацией API и несколько curl команд для тестирования (а лучше ссылку на Swagger).
 
 -----------------------------------------------------
-[REST API documentation](http://localhost:8080/swagger-ui.html)  
+[REST API documentation](http://localhost:8080)  
 Креденшелы:
 ```
 User:  user@yandex.ru / password
