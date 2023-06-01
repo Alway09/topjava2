@@ -1,4 +1,4 @@
-package com.github.Alway09.RestaurantVotingApp.web.vote;
+package com.github.Alway09.RestaurantVotingApp.web;
 
 import com.github.Alway09.RestaurantVotingApp.service.RestaurantService;
 import com.github.Alway09.RestaurantVotingApp.service.VoteService;
@@ -31,8 +31,8 @@ public class VoteController {
     }
 
     @Operation(summary = "Get all authorized user votes for restaurant by restaurant id")
-    @GetMapping("/{restaurantId}")
-    public List<VoteTo> getAllForRestaurant(@PathVariable int restaurantId) {
+    @GetMapping("/restaurant")
+    public List<VoteTo> getAllForRestaurant(@RequestParam int restaurantId) {
         restaurantService.findById(restaurantId);
         return createTos(service.getAllUserVotesForRestaurant(restaurantId, authId()));
     }
@@ -43,10 +43,16 @@ public class VoteController {
         return createTo(service.getActualVote(authId()));
     }
 
-    @Operation(summary = "Vote for restaurant by restaurant id")
-    @PostMapping("/{restaurantId}")
-    public VoteTo voteForRestaurant(@PathVariable int restaurantId) {
-        return createTo(service.createOrUpdate(restaurantService.findById(restaurantId), authUser()));
+    @Operation(summary = "Vote for restaurant")
+    @PostMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public VoteTo voteForRestaurant(@RequestBody int restaurantId) {
+        return createTo(service.create(restaurantService.findById(restaurantId), authUser()));
+    }
+
+    @Operation(summary = "Updating actual user vote")
+    @PutMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public VoteTo updateVote(@RequestBody int restaurantId) {
+        return createTo(service.update(restaurantService.findById(restaurantId), authId()));
     }
 
     @Operation(summary = "Delete actual authorized user vote")
