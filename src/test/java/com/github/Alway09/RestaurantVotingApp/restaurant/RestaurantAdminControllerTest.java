@@ -87,17 +87,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(getTos(List.of(RESTAURANT3, RESTAURANT2, RESTAURANT1))));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getList() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/list"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT1, RESTAURANT2, RESTAURANT3)));
+                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT3, RESTAURANT2, RESTAURANT1)));
     }
 
     @Test
@@ -117,18 +107,6 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getByName() throws Exception {
-        getByName(RESTAURANT3.getName(), List.of(getTo(RESTAURANT3)));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getByName_notExisted() throws Exception {
-        getByName("NotExist", List.of());
     }
 
     protected void getByName(String name, List<RestaurantTo> expect) throws Exception {

@@ -5,14 +5,12 @@ import com.github.Alway09.RestaurantVotingApp.service.RestaurantService;
 import com.github.Alway09.RestaurantVotingApp.to.CreateRestaurantTo;
 import com.github.Alway09.RestaurantVotingApp.to.RestaurantTo;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,25 +29,13 @@ public class RestaurantAdminController {
     public static final String REST_URL = "/api/admin/restaurants";
     private RestaurantService service;
 
-    @Operation(summary = "Get all restaurants or one restaurant by name",
-            description = "Get all restaurants with it's menus and actual votes OR get restaurant with it's menus and actual votes by name if name is present.",
-            parameters = @Parameter(name = "name", description = "Name of the restaurant"))
+    @Operation(summary = "Get all restaurants")
     @GetMapping("/")
-    public List<RestaurantTo> getAllOrByName(@RequestParam @Nullable String name) {
-        if (name != null) {
-            var restaurant = service.getByName(name);
-            return restaurant == null ? List.of() : List.of(createOutcomeTo(restaurant));
-        }
-        return createOutcomeTos(service.getAll());
+    public List<RestaurantTo> getAll() {
+        return createOutcomeTos(service.getList());
     }
 
-    @Operation(summary = "Get list of all restaurants", description = "Each element contains only name and id.")
-    @GetMapping("/list")
-    public List<CreateRestaurantTo> getList() {
-        return createIncomeTos(service.getList());
-    }
-
-    @Operation(summary = "Get restaurant by id", description = "Get restaurant with it's menus and actual votes amount by id.")
+    @Operation(summary = "Get restaurant by id")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         var restaurant = service.get(id);

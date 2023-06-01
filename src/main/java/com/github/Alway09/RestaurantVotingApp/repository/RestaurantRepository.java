@@ -15,12 +15,12 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     @EntityGraph(attributePaths = "menus")
     Optional<Restaurant> findById(int id);
 
-    @Query("SELECT r FROM Restaurant r JOIN FETCH r.menus m WHERE r.id=:id AND m.actualDate=:actual_date")
-    Optional<Restaurant> getWithMenusByActualDate(@Param("id") int id, @Param("actual_date") LocalDate actualDate);
+    @Query("SELECT r FROM Restaurant r JOIN r.menus m WHERE r.id=:id AND m.actualDate=:actual_date")
+    Optional<Restaurant> getByActualDate(@Param("id") int id, @Param("actual_date") LocalDate actualDate);
 
-    @Override
+    /*@Override
     @EntityGraph(attributePaths = "menus")
-    List<Restaurant> findAll();
+    List<Restaurant> findAll();*/
 
     @Query("SELECT r FROM Restaurant r JOIN FETCH r.menus m WHERE m.actualDate=:actual_date")
     List<Restaurant> getAllWithMenusWithByActualDate(@Param("actual_date") LocalDate actualDate);

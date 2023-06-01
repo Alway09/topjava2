@@ -2,7 +2,6 @@ package com.github.Alway09.RestaurantVotingApp.service;
 
 import com.github.Alway09.RestaurantVotingApp.error.NotFoundException;
 import com.github.Alway09.RestaurantVotingApp.model.Restaurant;
-import com.github.Alway09.RestaurantVotingApp.repository.MenuRepository;
 import com.github.Alway09.RestaurantVotingApp.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.RESTAUR
 @CacheConfig(cacheNames = RESTAURANTS_CACHE_NAME)
 public class RestaurantService {
     private RestaurantRepository repository;
-    private MenuRepository menuRepository;
 
     public Restaurant get(int id) {
         log.info("get restaurant id={} with menus", id);
@@ -31,9 +29,9 @@ public class RestaurantService {
     }
 
     @Cacheable
-    public Restaurant getWithActualMenus(int id) {
+    public Restaurant getWithActualMenusWithoutFetching(int id) {
         log.info("get restaurant id={} with actual menus", id);
-        return repository.getWithMenusByActualDate(id, LocalDate.now())
+        return repository.getByActualDate(id, LocalDate.now())
                 .orElse(null);
     }
 
@@ -46,11 +44,6 @@ public class RestaurantService {
     public Restaurant getByNameWithActualMenus(String name) {
         log.info("get restaurant with name={}", name);
         return repository.getByNameWithMenusWithActualDate(name, LocalDate.now()).orElse(null);
-    }
-
-    public List<Restaurant> getAll() {
-        log.info("get all restaurants with menus");
-        return repository.findAll();
     }
 
     @Cacheable(key = "#root.methodName")
