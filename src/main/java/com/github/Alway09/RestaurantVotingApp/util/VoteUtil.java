@@ -7,12 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -52,21 +48,13 @@ public class VoteUtil {
     }
 
     public static String getActualStartAndDateTimeMessage() {
-        return "Actual times now is: start of voting=" + VOTING_START_DEFAULT.toString()
-                + "; end of voting=" + VOTING_END_DEFAULT.toString();
-    }
-
-    public static LocalDateTime votingStart() {
-        return LocalDate.now().atTime(votingStart);
-    }
-
-    public static LocalDateTime votingEnd() {
-        return LocalDate.now().atTime(votingEnd);
+        return "Actual times now is: start of voting=" + votingStart.toString()
+                + "; end of voting=" + votingEnd.toString();
     }
 
     public static boolean isVotingInProcess() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        return (currentDateTime.isAfter(votingStart())) && (currentDateTime.isBefore(votingEnd()));
+        LocalTime currentTime = LocalTime.now();
+        return (currentTime.isAfter(votingStart)) && (currentTime.isBefore(votingEnd));
     }
 
     public static void setVotingStart(LocalTime value) {
@@ -81,12 +69,7 @@ public class VoteUtil {
         return new VoteTo(vote.getRestaurant().getId(), vote.getDate());
     }
 
-    public static List<VoteTo> createTos(Iterable<Vote> votes) {
-        List<VoteTo> voteTos = new ArrayList<>();
-        for (Vote vote : votes) {
-            voteTos.add(createTo(vote));
-        }
-        voteTos.sort(Comparator.comparing(VoteTo::getDate).reversed());
-        return voteTos;
+    public static List<VoteTo> createTos(List<Vote> votes) {
+        return votes.stream().map(VoteUtil::createTo).toList();
     }
 }

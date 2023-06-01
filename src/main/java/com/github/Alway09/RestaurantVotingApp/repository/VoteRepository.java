@@ -12,7 +12,7 @@ public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id AND v.date=:date")
     Optional<Vote> findUserVote(@Param("user_id") int userId, @Param("date") LocalDate date);
 
-    @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id")
+    @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id ORDER BY v.date DESC")
     List<Vote> getAllUserVotes(@Param("user_id") int userId);
 
     @Query("SELECT v FROM Vote v WHERE v.user.id=:user_id AND v.restaurant.id=:restaurant_id")

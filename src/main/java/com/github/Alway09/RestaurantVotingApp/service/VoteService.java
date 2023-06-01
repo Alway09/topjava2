@@ -55,10 +55,7 @@ public class VoteService {
 
     public Vote getActualVote(int userId) throws NotFoundException {
         Optional<Vote> vote = repository.findUserVote(userId, LocalDate.now());
-        if (vote.isPresent()) {
-            return vote.get();
-        }
-        throw new NotFoundException("Actual vote not found");
+        return vote.orElseThrow(() -> new NotFoundException("Actual vote not found"));
     }
 
     @Cacheable(key = "#userId")
