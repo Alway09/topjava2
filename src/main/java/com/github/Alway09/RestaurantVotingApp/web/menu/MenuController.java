@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.*;
-import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
 import static com.github.Alway09.RestaurantVotingApp.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.Alway09.RestaurantVotingApp.util.validation.ValidationUtil.checkNew;
 import static java.util.Objects.requireNonNullElse;
@@ -35,7 +34,7 @@ import static java.util.Objects.requireNonNullElse;
 @RequestMapping(value = MenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @AllArgsConstructor
-@CacheConfig(cacheNames = RESTAURANTS_CACHE_NAME)
+@CacheConfig(cacheNames = MENUS_CACHE_NAME)
 public class MenuController {
     private MenuRepository repository;
     private RestaurantService restaurantService;
@@ -64,6 +63,7 @@ public class MenuController {
     }
 
     @Operation(summary = "Get menu by id")
+    @Cacheable
     @GetMapping("/{id}")
     public MenuTo get(@PathVariable int id) {
         log.info("get menu id={}", id);
@@ -71,7 +71,7 @@ public class MenuController {
     }
 
     @Operation(summary = "Delete menu by id")
-    @CacheEvict(allEntries = true)
+    @CacheEvict
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
@@ -80,11 +80,8 @@ public class MenuController {
     }
 
     @Operation(summary = "Update menu by id")
-    @Caching(evict = {
-            @CacheEvict(key = "@menuRepository.getExisted(#id).restaurant.name"),
-            @CacheEvict(key = "@menuRepository.getExisted(#id).restaurant.id()")
-    })
     @PutMapping("/{id}")
+    @CacheEvict
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable int id, @Valid @RequestBody MenuTo menuTo) {
         log.info("update menu id={}", id);
@@ -98,10 +95,6 @@ public class MenuController {
     }
 
     @Operation(summary = "Create menu")
-    @Caching(evict = {
-            @CacheEvict(key = "@restaurantService.findById(#menuTo.restaurantId).name"),
-            @CacheEvict(key = "#menuTo.restaurantId")
-    })
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Menu> createWithLocation(@Valid @RequestBody MenuTo menuTo) {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());

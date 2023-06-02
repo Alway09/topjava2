@@ -6,7 +6,6 @@ import com.github.Alway09.RestaurantVotingApp.repository.MenuRepository;
 import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
 import com.github.Alway09.RestaurantVotingApp.util.JsonUtil;
 import com.github.Alway09.RestaurantVotingApp.web.menu.MenuController;
-import com.github.benmanes.caffeine.cache.Cache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -18,12 +17,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.github.Alway09.RestaurantVotingApp.TestData.MENU1;
 import static com.github.Alway09.RestaurantVotingApp.menu.MenuTestData.*;
-import static com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.ADMIN_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.*;
-import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -48,9 +46,6 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         newMenu.setId(MENU_NEW_ID);
         MENU_MATCHER.assertMatch(repository.getExisted(MENU_NEW_ID), createFromTo(newMenu));
-
-        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(TestData.RESTAURANT1.getName()));
-        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1_ID));
     }
 
     @Test
@@ -117,7 +112,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(TestData.MENU1, TestData.MENU2, TestData.MENU3))));
+                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, TestData.MENU2, TestData.MENU3))));
     }
 
     @Test
@@ -129,7 +124,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(TestData.MENU1, TestData.MENU2))));
+                .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, TestData.MENU2))));
     }
 
     @Test
@@ -139,7 +134,9 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTo(TestData.MENU1)));
+                .andExpect(MENU_TO_MATCHER.contentJson(createTo(MENU1)));
+
+        assertEquals(createTo(MENU1), cacheManager.getCache(MENUS_CACHE_NAME).get(MENU1_ID, MenuTo.class));
     }
 
     @Test
@@ -164,9 +161,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         MenuTo updated = getUpdated();
         update(updated, status().isNoContent());
-
-        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(TestData.RESTAURANT1.getName()));
-        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get(RESTAURANT1_ID));
+        assertNull(cacheManager.getCache(MENUS_CACHE_NAME).get(MENU1_ID));
     }
 
     @Test
@@ -236,7 +231,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
         assertFalse(repository.findById(MENU2_ID).isPresent());
 
-        assertEquals(0L, ((Cache) cacheManager.getCache(RESTAURANTS_CACHE_NAME).getNativeCache()).estimatedSize());
+        assertNull(cacheManager.getCache(MENUS_CACHE_NAME).get(MENU1_ID));
     }
 
     @Test

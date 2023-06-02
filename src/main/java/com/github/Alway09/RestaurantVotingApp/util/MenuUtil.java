@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MenuUtil {
+    public static final String MENUS_CACHE_NAME = "menus";
     public static Menu createFromTo(MenuTo menuTo) {
         return new Menu(menuTo.getId(), menuTo.getName(), null, menuTo.getDishes(), menuTo.getActualDate());
 

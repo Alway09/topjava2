@@ -3,7 +3,6 @@ package com.github.Alway09.RestaurantVotingApp.restaurant;
 import com.github.Alway09.RestaurantVotingApp.AbstractControllerTest;
 import com.github.Alway09.RestaurantVotingApp.TestData;
 import com.github.Alway09.RestaurantVotingApp.model.Restaurant;
-import com.github.Alway09.RestaurantVotingApp.to.RestaurantTo;
 import com.github.Alway09.RestaurantVotingApp.web.restaurant.RestaurantController;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -71,14 +70,6 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.RESTAURANT3_ID))
                 .andDo(print())
                 .andExpect(status().isNotFound());
-    }
-
-    protected void getByName(String name, List<RestaurantTo> expect) throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL).param("name", name))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RestaurantTestData.RESTAURANT_TO_MATCHER.contentJson(expect));
     }
 
     @Test
