@@ -126,19 +126,4 @@ public class VoteControllerTest extends AbstractControllerTest {
                     .andExpect(content().string(containsString("Voting time is out.")));
         }
     }
-
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void deleteActualVote() throws Exception {
-        if (VoteUtil.isVotingInProcess()) {
-            perform(MockMvcRequestBuilders.delete(REST_URL))
-                    .andDo(print())
-                    .andExpect(status().isNoContent());
-        } else {
-            perform(MockMvcRequestBuilders.delete(REST_URL))
-                    .andDo(print())
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Voting time is out.")));
-        }
-    }
 }

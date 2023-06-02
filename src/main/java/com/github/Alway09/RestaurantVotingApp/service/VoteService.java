@@ -73,13 +73,4 @@ public class VoteService {
         log.info("get votes of user id={} for restaurant  id={}", userId, restaurantId);
         return repository.getAllUserVotesForRestaurant(userId, restaurantId);
     }
-
-    @CacheEvict(key = "#userId")
-    public void deleteActualVote(int userId) throws IllegalArgumentException {
-        if(isVotingInProcess()){
-            repository.deleteExisted(getActualVote(userId).id());
-        } else {
-            throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
-        }
-    }
 }

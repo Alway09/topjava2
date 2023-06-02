@@ -37,40 +37,24 @@ public class VoteServiceTest {
 
     @Order(1)
     @Test
-    void failureDelete_notFound() {
-        setVotingTimes(-1, 1);
-        assertThrows(NotFoundException.class, () -> service.deleteActualVote(user2.id()));
-    }
-
-    @Order(2)
-    @Test
-    void failureDelete_timeExceed() {
-        setVotingTimes(-2, -1);
-        assertThrows(IllegalRequestDataException.class, () -> service.deleteActualVote(user2.id()));
-    }
-
-    @Order(3)
-    @Test
     void failureUpdate_timeExceeded() {
         setVotingTimes(-2, -1);
         assertThrows(IllegalRequestDataException.class, () -> service.update(TestData.RESTAURANT1, user.id()));
     }
 
-    @Order(4)
+    @Order(2)
     @Test
     void failureUpdate_voteNotExist() {
         setVotingTimes(-1, 1);
         assertThrows(NotFoundException.class, () -> service.update(TestData.RESTAURANT1, user2.id()));
     }
 
-    @Order(5)
     @Test
     void getActualVote() {
         assertEquals(1, service.getActualVote(user.id()).getRestaurant().getId());
         assertEquals(1, service.getActualVote(admin.id()).getRestaurant().getId());
     }
 
-    @Order(6)
     @Test
     void getAllUserVotes() {
         List<Vote> votes = service.getAllUserVotes(user.id());
@@ -78,7 +62,6 @@ public class VoteServiceTest {
         assertEquals(votes, cacheManager.getCache(VOTES_CACHE_NAME).get(USER_ID, List.class));
     }
 
-    @Order(7)
     @Test
     void successUpdate() {
         setVotingTimes(-1, 1);
@@ -87,19 +70,10 @@ public class VoteServiceTest {
         assertNull((cacheManager.getCache(VOTES_CACHE_NAME).get(USER_ID)));
     }
 
-    @Order(8)
     @Test
     void successCreate() {
         assertEquals(NEW_VOTE, service.create(TestData.RESTAURANT1, user2));
         assertEquals(NEW_VOTE, service.getActualVote(user2.id()));
         assertNull((cacheManager.getCache(VOTES_CACHE_NAME).get(user2.id())));
-    }
-
-    @Order(9)
-    @Test
-    void successDelete() {
-        setVotingTimes(-1, 1);
-        service.deleteActualVote(user.id());
-        assertNull((cacheManager.getCache(VOTES_CACHE_NAME).get(USER_ID)));
     }
 }

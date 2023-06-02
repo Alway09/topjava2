@@ -5,16 +5,15 @@ import com.github.Alway09.RestaurantVotingApp.service.VoteService;
 import com.github.Alway09.RestaurantVotingApp.to.VoteTo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTo;
-import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTos;
 import static com.github.Alway09.RestaurantVotingApp.AuthUser.authId;
 import static com.github.Alway09.RestaurantVotingApp.AuthUser.authUser;
+import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTo;
+import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTos;
 
 @RestController
 @RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,12 +52,5 @@ public class VoteController {
     @PutMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public VoteTo updateVote(@RequestBody int restaurantId) {
         return createTo(service.update(restaurantService.findById(restaurantId), authId()));
-    }
-
-    @Operation(summary = "Delete actual authorized user vote")
-    @DeleteMapping("/")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteActualVote() {
-        service.deleteActualVote(authId());
     }
 }
