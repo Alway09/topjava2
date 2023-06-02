@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.createOutcomeTo;
-import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.createOutcomeTos;
+import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.createTos;
+import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.createTo;
 
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -27,14 +27,13 @@ public class RestaurantController {
     @Operation(summary = "Get all restaurants that have actual menus")
     @GetMapping("/")
     public List<RestaurantTo> getAll() {
-        return createOutcomeTos(service.getAllWithActualMenus());
+        return createTos(service.getAllWithActualMenus());
     }
 
-    @Operation(summary = "Get restaurant that have actual menus by id")
+    @Operation(summary = "Get restaurant that have actual menu by id")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
-        var restaurant = service.getWithActualMenus(id);
-        return restaurant != null ? createOutcomeTo(restaurant) : null;
+        return createTo(service.getWithActualMenus(id));
     }
 }

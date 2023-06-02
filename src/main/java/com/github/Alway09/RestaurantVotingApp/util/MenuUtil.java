@@ -3,8 +3,6 @@ package com.github.Alway09.RestaurantVotingApp.util;
 import com.github.Alway09.RestaurantVotingApp.model.Menu;
 import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class MenuUtil {
@@ -18,13 +16,7 @@ public class MenuUtil {
         return new MenuTo(menu.getId(), menu.getName(), menu.getRestaurant().getId(), menu.getDishes(), menu.getActualDate());
     }
 
-    public static List<MenuTo> createTos(Iterable<Menu> menus) {
-        List<MenuTo> menuTos = new ArrayList<>();
-        for (Menu menu : menus) {
-            menuTos.add(createTo(menu));
-        }
-        menuTos.sort(Comparator.comparing(MenuTo::getActualDate).reversed()
-                .thenComparing(MenuTo::getName));
-        return menuTos;
+    public static List<MenuTo> createTos(List<Menu> menus) {
+        return menus.stream().map(MenuUtil::createTo).toList();
     }
 }

@@ -59,9 +59,5 @@ public class TestData {
         ));
         MENU3_DISHES.sort(Comparator.comparing(Dish::getName));
         MENU3.setDishes(MENU3_DISHES);
-
-        RESTAURANT1.setMenus(List.of(MENU1));
-        RESTAURANT2.setMenus(List.of(MENU2));
-        RESTAURANT3.setMenus(List.of(MENU3));
     }
 }

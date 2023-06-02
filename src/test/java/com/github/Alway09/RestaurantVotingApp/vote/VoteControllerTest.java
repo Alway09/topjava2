@@ -1,8 +1,6 @@
 package com.github.Alway09.RestaurantVotingApp.vote;
 
 import com.github.Alway09.RestaurantVotingApp.AbstractControllerTest;
-import com.github.Alway09.RestaurantVotingApp.TestData;
-import com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData;
 import com.github.Alway09.RestaurantVotingApp.util.JsonUtil;
 import com.github.Alway09.RestaurantVotingApp.util.VoteUtil;
 import com.github.Alway09.RestaurantVotingApp.web.VoteController;
@@ -14,12 +12,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static com.github.Alway09.RestaurantVotingApp.TestData.*;
 import static com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER2_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTo;
 import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.createTos;
-import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.VOTE_TO_MATCHER_EXCLUDE_DATE;
+import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.VOTE_TO_MATCHER;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,20 +35,18 @@ public class VoteControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE
-                        .contentJson(createTos(List.of(TestData.VOTE5, TestData.VOTE4, TestData.VOTE3, TestData.VOTE2, TestData.VOTE1))));
+                .andExpect(VOTE_TO_MATCHER.contentJson(createTos(List.of(VOTE5, VOTE4, VOTE3, VOTE2, VOTE1))));
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     public void getAllForRestaurant() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "restaurant")
-                .param("restaurantId", String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+                .param("restaurantId", String.valueOf(RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE
-                        .contentJson(createTos(List.of(TestData.VOTE5, TestData.VOTE3, TestData.VOTE2, TestData.VOTE1))));
+                .andExpect(VOTE_TO_MATCHER.contentJson(createTos(List.of(VOTE5, VOTE3, VOTE2, VOTE1))));
     }
 
     @Test
@@ -59,12 +56,12 @@ public class VoteControllerTest extends AbstractControllerTest {
                 .param("restaurantId", String.valueOf(NOT_FOUND)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(TestData.NOT_FOUND_EXCEPTION_MESSAGE)));
+                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
     }
 
     @Test
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -74,7 +71,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     void getActualVote() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "actual"))
                 .andDo(print())
-                .andExpect(VOTE_TO_MATCHER_EXCLUDE_DATE.contentJson(createTo(TestData.VOTE5)));
+                .andExpect(VOTE_TO_MATCHER.contentJson(createTo(VOTE5)));
 
     }
 

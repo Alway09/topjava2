@@ -12,6 +12,4 @@ import java.util.List;
 public interface MenuRepository extends BaseRepository<Menu> {
     @Query("SELECT m FROM Menu m WHERE m.actualDate=:actual_date")
     List<Menu> getAllByActualDate(@Param("actual_date")LocalDate actualDate);
-
-    List<Menu> findAllById(Iterable<Integer> ids);
 }

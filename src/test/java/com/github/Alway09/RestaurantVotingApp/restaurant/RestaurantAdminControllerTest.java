@@ -21,7 +21,7 @@ import static com.github.Alway09.RestaurantVotingApp.TestData.*;
 import static com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.ADMIN_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
-import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
+import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,7 +65,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdated())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(containsString("CreateRestaurantTo must be new (id=null)")));
+                .andExpect(content().string(containsString("RestaurantTo must be new (id=null)")));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER_EXCLUDE_MENU.contentJson(List.of(RESTAURANT3, RESTAURANT2, RESTAURANT1)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(createTos(List.of(RESTAURANT3, RESTAURANT2, RESTAURANT1))));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(getTo(RESTAURANT3)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(createTo(RESTAURANT3)));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER.contentJson(updated));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(createTo(updated)));
         assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getAllWithActualMenus", List.class));
     }
 

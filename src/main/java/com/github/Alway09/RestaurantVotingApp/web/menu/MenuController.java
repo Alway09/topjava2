@@ -82,7 +82,7 @@ public class MenuController {
 
     @Operation(summary = "Update menu by id")
     @PutMapping("/{id}")
-    @CacheEvict
+    @CacheEvict(key = "#id")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable int id, @Valid @RequestBody MenuTo menuTo) {
         log.info("update menu id={}", id);

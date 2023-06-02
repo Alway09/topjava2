@@ -2,7 +2,6 @@ package com.github.Alway09.RestaurantVotingApp.web.restaurant;
 
 import com.github.Alway09.RestaurantVotingApp.model.Restaurant;
 import com.github.Alway09.RestaurantVotingApp.service.RestaurantService;
-import com.github.Alway09.RestaurantVotingApp.to.CreateRestaurantTo;
 import com.github.Alway09.RestaurantVotingApp.to.RestaurantTo;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -32,14 +31,13 @@ public class RestaurantAdminController {
     @Operation(summary = "Get all restaurants")
     @GetMapping("/")
     public List<RestaurantTo> getAll() {
-        return createOutcomeTos(service.getAll());
+        return createTos(service.getAll());
     }
 
     @Operation(summary = "Get restaurant by id")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
-        var restaurant = service.get(id);
-        return createOutcomeTo(restaurant);
+        return createTo(service.get(id));
     }
 
     @Operation(summary = "Delete restaurant by id", description = "Restaurant menus deletes cascading.")
@@ -51,7 +49,7 @@ public class RestaurantAdminController {
 
     @Operation(summary = "Create restaurant")
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody CreateRestaurantTo restaurantTo) {
+    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
         log.info("create restaurant {}", restaurantTo);
         checkNew(restaurantTo);
         Restaurant created = service.saveOrUpdate(createFromTo(restaurantTo));
@@ -64,7 +62,7 @@ public class RestaurantAdminController {
     @Operation(summary = "Update restaurant by id")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody CreateRestaurantTo restaurantTo, @PathVariable int id) {
+    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
         log.info("update restaurant id={}", id);
         assureIdConsistent(restaurantTo, id);
         Restaurant updated = service.get(id);

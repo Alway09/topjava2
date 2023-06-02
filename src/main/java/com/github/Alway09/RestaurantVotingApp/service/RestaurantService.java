@@ -38,13 +38,13 @@ public class RestaurantService {
 
     public List<Restaurant> getAll() {
         log.info("get all restaurants");
-        return repository.findAll(Sort.by(Sort.Direction.DESC, "name"));
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 
     @Cacheable(key = "#root.methodName")
     public List<Restaurant> getAllWithActualMenus() {
-        log.info("get all restaurants");
-        return repository.getListByActualDate(LocalDate.now());
+        log.info("get all restaurants with actual menus");
+        return repository.getAllByMenuActualDate(LocalDate.now());
     }
 
     public Restaurant findById(int id) {

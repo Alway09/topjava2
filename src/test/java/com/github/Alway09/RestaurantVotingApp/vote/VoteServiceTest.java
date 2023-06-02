@@ -16,6 +16,7 @@ import org.springframework.cache.CacheManager;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.github.Alway09.RestaurantVotingApp.TestData.VOTE5;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.*;
 import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.*;
