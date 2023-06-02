@@ -42,13 +42,13 @@ public class VoteController {
         return createTo(service.getActualVote(authId()));
     }
 
-    @Operation(summary = "Vote for restaurant")
+    @Operation(summary = "Vote for restaurant by restaurant id")
     @PostMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public VoteTo voteForRestaurant(@RequestBody int restaurantId) {
         return createTo(service.create(restaurantService.findById(restaurantId), authUser()));
     }
 
-    @Operation(summary = "Updating actual user vote")
+    @Operation(summary = "Change actual user vote on restaurant, represented by id")
     @PutMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public VoteTo updateVote(@RequestBody int restaurantId) {
         return createTo(service.update(restaurantService.findById(restaurantId), authId()));

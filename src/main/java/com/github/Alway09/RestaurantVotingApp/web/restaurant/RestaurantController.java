@@ -24,7 +24,7 @@ public class RestaurantController {
     public static final String REST_URL = "/api/restaurants";
     private RestaurantService service;
 
-    @Operation(summary = "Get all restaurants that have actual menus")
+    @Operation(summary = "Get all restaurants that have actual menu")
     @GetMapping("/")
     public List<RestaurantTo> getAll() {
         return createTos(service.getAllWithActualMenus());
