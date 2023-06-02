@@ -10,8 +10,8 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 public interface MenuRepository extends BaseRepository<Menu> {
-    @Query("SELECT m FROM Menu m WHERE m.actualDate>=:start_date AND m.actualDate<:end_date")
-    List<Menu> getAllBetweenInclusive(@Param("start_date") LocalDate startDate, @Param("end_date") LocalDate endDate);
+    @Query("SELECT m FROM Menu m WHERE m.actualDate=:actual_date")
+    List<Menu> getAllByActualDate(@Param("actual_date")LocalDate actualDate);
 
     List<Menu> findAllById(Iterable<Integer> ids);
 }

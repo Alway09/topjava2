@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,19 +48,19 @@ public class MenuController {
         binder.addValidators(creationDateValidator);
     }
 
-    @Operation(summary = "Get all menus or menus between dates",
-            description = "Get all menus OR get all menus between dates if one or both dates are present.",
+    @Operation(summary = "Get all menus or menus with actual date, passed as parameter",
             parameters = {
-                    @Parameter(name = "startDate", description = "Start date of range"),
-                    @Parameter(name = "endDate", description = "End date of range")
+                    @Parameter(name = "actualDate", description = "Actual date of menus")
             })
     @GetMapping("/")
-    public List<MenuTo> getAll(@RequestParam @Nullable LocalDate startDate,
-                               @RequestParam @Nullable LocalDate endDate) {
-        startDate = requireNonNullElse(startDate, LocalDate.of(2023, 1, 1));
-        endDate = requireNonNullElse(endDate, LocalDate.of(3000, 1, 1));
-        log.info("get all menus between {} and {}", startDate, endDate);
-        return createTos(repository.getAllBetweenInclusive(startDate, endDate));
+    public List<MenuTo> getAll(@RequestParam @Nullable LocalDate actualDate) {
+        if(actualDate == null){
+            log.info("get all menus");
+            return createTos(repository.findAll(Sort.by(Sort.Direction.DESC, "actualDate")));
+        }
+
+        log.info("get all menus with actual date {}", actualDate);
+        return createTos(repository.getAllByActualDate(actualDate));
     }
 
     @Operation(summary = "Get menu by id")

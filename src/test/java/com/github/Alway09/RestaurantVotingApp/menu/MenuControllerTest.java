@@ -117,10 +117,9 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    void getAllBetween() throws Exception {
+    void getAllByDate() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
-                .param("startDate", LocalDate.now().toString())
-                .param("endDate", LocalDate.now().plusDays(1).toString()))
+                .param("actualDate", LocalDate.now().toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
