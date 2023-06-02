@@ -6,6 +6,7 @@ import com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData;
 import com.github.Alway09.RestaurantVotingApp.util.JsonUtil;
 import com.github.Alway09.RestaurantVotingApp.util.VoteUtil;
 import com.github.Alway09.RestaurantVotingApp.web.VoteController;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Order(3)
 public class VoteControllerTest extends AbstractControllerTest {
     private static final String REST_URL = VoteController.REST_URL + "/";
 

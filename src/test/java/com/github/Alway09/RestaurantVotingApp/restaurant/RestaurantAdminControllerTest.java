@@ -4,11 +4,12 @@ import com.github.Alway09.RestaurantVotingApp.AbstractControllerTest;
 import com.github.Alway09.RestaurantVotingApp.error.NotFoundException;
 import com.github.Alway09.RestaurantVotingApp.model.Restaurant;
 import com.github.Alway09.RestaurantVotingApp.service.RestaurantService;
-import com.github.Alway09.RestaurantVotingApp.to.RestaurantTo;
 import com.github.Alway09.RestaurantVotingApp.util.JsonUtil;
 import com.github.Alway09.RestaurantVotingApp.web.restaurant.RestaurantAdminController;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -20,17 +21,23 @@ import static com.github.Alway09.RestaurantVotingApp.TestData.*;
 import static com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.ADMIN_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
+import static com.github.Alway09.RestaurantVotingApp.util.RestaurantUtil.RESTAURANTS_CACHE_NAME;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Order(2)
 public class RestaurantAdminControllerTest extends AbstractControllerTest {
     private static final String REST_URL = RestaurantAdminController.REST_URL + "/";
 
     @Autowired
     private RestaurantService service;
+
+    @Autowired
+    CacheManager cacheManager;
 
     // ===============================CREATE===============================
     @Test
@@ -41,6 +48,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
 
         newRestaurant.setId(RESTAURANT_NEW_ID);
         RESTAURANT_MATCHER.assertMatch(service.findById(RESTAURANT_NEW_ID), newRestaurant);
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getAllWithActualMenus", List.class));
     }
 
     @Test
@@ -106,15 +114,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
-    }
-
-    protected void getByName(String name, List<RestaurantTo> expect) throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL).param("name", name))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(expect));
+                .andExpect(content().string(containsString("Restaurant with id=" + NOT_FOUND + " not found")));
     }
 
     @Test
@@ -136,6 +136,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(updated));
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getAllWithActualMenus", List.class));
     }
 
     @Test
@@ -148,7 +149,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+                .andExpect(content().string(containsString("Restaurant with id=" + NOT_FOUND + " not found")));
     }
 
     @Test
@@ -184,6 +185,7 @@ public class RestaurantAdminControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertThrows(NotFoundException.class, () -> service.findById(RESTAURANT2_ID));
+        assertNull(cacheManager.getCache(RESTAURANTS_CACHE_NAME).get("getAllWithActualMenus", List.class));
     }
 
     @Test

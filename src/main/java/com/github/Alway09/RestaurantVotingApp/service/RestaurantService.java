@@ -6,6 +6,7 @@ import com.github.Alway09.RestaurantVotingApp.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,42 +24,25 @@ public class RestaurantService {
     private RestaurantRepository repository;
 
     public Restaurant get(int id) {
-        log.info("get restaurant id={} with menus", id);
+        log.info("get restaurant id={}", id);
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Entity with id=" + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Restaurant with id=" + id + " not found"));
     }
 
     @Cacheable
-    public Restaurant getWithActualMenusWithoutFetching(int id) {
+    public Restaurant getWithActualMenus(int id) {
         log.info("get restaurant id={} with actual menus", id);
         return repository.getByActualDate(id, LocalDate.now())
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Restaurant with id=" + id + " not found"));
     }
 
-    public Restaurant getByName(String name) {
-        log.info("get restaurant by name={}", name);
-        return repository.getByNameWithMenus(name).orElse(null);
-    }
-
-    @Cacheable
-    public Restaurant getByNameWithActualMenus(String name) {
-        log.info("get restaurant with name={}", name);
-        return repository.getByNameWithMenusWithActualDate(name, LocalDate.now()).orElse(null);
-    }
-
-    @Cacheable(key = "#root.methodName")
-    public List<Restaurant> getAllWithActualMenus() {
-        log.info("get all restaurants with actual menus");
-        return repository.getAllWithMenusWithByActualDate(LocalDate.now());
-    }
-
-    public List<Restaurant> getList() {
+    public List<Restaurant> getAll() {
         log.info("get all restaurants");
         return repository.findAll(Sort.by(Sort.Direction.DESC, "name"));
     }
 
     @Cacheable(key = "#root.methodName")
-    public List<Restaurant> getListWithActualMenus() {
+    public List<Restaurant> getAllWithActualMenus() {
         log.info("get all restaurants");
         return repository.getListByActualDate(LocalDate.now());
     }
@@ -67,11 +51,13 @@ public class RestaurantService {
         return repository.getExisted(id);
     }
 
+    @CacheEvict(allEntries = true)
     public void delete(int id) {
         log.info("delete restaurant id={}", id);
         repository.deleteExisted(id);
     }
 
+    @CacheEvict(allEntries = true)
     public Restaurant saveOrUpdate(Restaurant restaurant) {
         return repository.save(restaurant);
     }

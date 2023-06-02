@@ -32,7 +32,7 @@ public class RestaurantAdminController {
     @Operation(summary = "Get all restaurants")
     @GetMapping("/")
     public List<RestaurantTo> getAll() {
-        return createOutcomeTos(service.getList());
+        return createOutcomeTos(service.getAll());
     }
 
     @Operation(summary = "Get restaurant by id")

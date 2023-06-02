@@ -24,18 +24,17 @@ public class RestaurantController {
     public static final String REST_URL = "/api/restaurants";
     private RestaurantService service;
 
-    @Operation(summary = "Get all restaurants that have actual menus",
-            description = "Each element contains only name and id.")
+    @Operation(summary = "Get all restaurants that have actual menus")
     @GetMapping("/")
     public List<RestaurantTo> getAll() {
-        return createOutcomeTos(service.getListWithActualMenus());
+        return createOutcomeTos(service.getAllWithActualMenus());
     }
 
     @Operation(summary = "Get restaurant that have actual menus by id")
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant id={}", id);
-        var restaurant = service.getWithActualMenusWithoutFetching(id);
+        var restaurant = service.getWithActualMenus(id);
         return restaurant != null ? createOutcomeTo(restaurant) : null;
     }
 }
