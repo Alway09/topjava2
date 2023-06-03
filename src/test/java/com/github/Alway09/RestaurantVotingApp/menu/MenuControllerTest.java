@@ -1,7 +1,7 @@
 package com.github.Alway09.RestaurantVotingApp.menu;
 
 import com.github.Alway09.RestaurantVotingApp.AbstractControllerTest;
-import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
+import com.github.Alway09.RestaurantVotingApp.to.MenuOutTo;
 import com.github.Alway09.RestaurantVotingApp.web.menu.MenuController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,7 @@ import static com.github.Alway09.RestaurantVotingApp.TestData.MENU1;
 import static com.github.Alway09.RestaurantVotingApp.TestData.NOT_FOUND_EXCEPTION_MESSAGE;
 import static com.github.Alway09.RestaurantVotingApp.menu.MenuTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
-import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.MENUS_CACHE_NAME;
-import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.createTo;
+import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,9 +32,9 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_TO_MATCHER.contentJson(createTo(MENU1)));
+                .andExpect(MENU_OUT_TO_MATCHER.contentJson(createOutTo(MENU1)));
 
-        assertEquals(createTo(MENU1), cacheManager.getCache(MENUS_CACHE_NAME).get(MENU1_ID, MenuTo.class));
+        assertEquals(createOutTo(MENU1), cacheManager.getCache(MENUS_CACHE_NAME).get(MENU1_ID, MenuOutTo.class));
     }
 
     @Test

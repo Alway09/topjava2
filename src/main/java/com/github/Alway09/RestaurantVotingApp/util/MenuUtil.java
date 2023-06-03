@@ -1,6 +1,7 @@
 package com.github.Alway09.RestaurantVotingApp.util;
 
 import com.github.Alway09.RestaurantVotingApp.model.Menu;
+import com.github.Alway09.RestaurantVotingApp.to.MenuOutTo;
 import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
 
 import java.util.List;
@@ -14,6 +15,10 @@ public class MenuUtil {
 
     public static MenuTo createTo(Menu menu) {
         return new MenuTo(menu.getId(), menu.getName(), menu.getRestaurant().getId(), menu.getDishes(), menu.getActualDate());
+    }
+
+    public static MenuOutTo createOutTo(Menu menu) {
+        return new MenuOutTo(menu.getId(), menu.getName(), menu.getDishes());
     }
 
     public static List<MenuTo> createTos(List<Menu> menus) {

@@ -53,13 +53,20 @@ public class MenuAdminController {
             })
     @GetMapping("/")
     public List<MenuTo> getAll(@RequestParam @Nullable LocalDate actualDate) {
-        if(actualDate == null){
+        if (actualDate == null) {
             log.info("get all menus");
             return createTos(repository.findAll(Sort.by(Sort.Direction.DESC, "actualDate")));
         }
 
         log.info("get all menus with actual date {}", actualDate);
         return createTos(repository.getAllByActualDate(actualDate));
+    }
+
+    @Operation(summary = "Get menu by id")
+    @GetMapping("/{id}")
+    public MenuTo get(@PathVariable int id) {
+        log.info("get menu id={}", id);
+        return createTo(repository.getExisted(id));
     }
 
     @Operation(summary = "Delete menu by id")
@@ -86,7 +93,7 @@ public class MenuAdminController {
         repository.save(menu);
     }
 
-    @Operation(summary = "Create menu")
+    @Operation(summary = "Create menu", description = "If actualDate is null, sets current date.")
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Menu> createWithLocation(@Valid @RequestBody MenuTo menuTo) {
         log.info("create menu {} for restaurant id={}", menuTo, menuTo.getRestaurantId());

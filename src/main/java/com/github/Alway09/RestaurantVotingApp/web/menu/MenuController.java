@@ -1,7 +1,7 @@
 package com.github.Alway09.RestaurantVotingApp.web.menu;
 
 import com.github.Alway09.RestaurantVotingApp.repository.MenuRepository;
-import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
+import com.github.Alway09.RestaurantVotingApp.to.MenuOutTo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.MENUS_CACHE_NAME;
-import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.createTo;
+import static com.github.Alway09.RestaurantVotingApp.util.MenuUtil.*;
 
 @RestController
 @RequestMapping(value = MenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,8 +28,8 @@ public class MenuController {
     @Operation(summary = "Get menu by id")
     @Cacheable
     @GetMapping("/{id}")
-    public MenuTo get(@PathVariable int id) {
+    public MenuOutTo get(@PathVariable int id) {
         log.info("get menu id={}", id);
-        return createTo(repository.getExisted(id));
+        return createOutTo(repository.getExisted(id));
     }
 }

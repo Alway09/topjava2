@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.github.Alway09.RestaurantVotingApp.TestData.MENU1;
+import static com.github.Alway09.RestaurantVotingApp.TestData.NOT_FOUND_EXCEPTION_MESSAGE;
 import static com.github.Alway09.RestaurantVotingApp.menu.MenuTestData.*;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.ADMIN_MAIL;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.USER_MAIL;
@@ -124,6 +125,32 @@ public class MenuAdminControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_TO_MATCHER.contentJson(createTos(List.of(MENU1, TestData.MENU2))));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void get() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + MENU1_ID))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MENU_TO_MATCHER.contentJson(createTo(MENU1)));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getNotFound() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(NOT_FOUND_EXCEPTION_MESSAGE)));
+    }
+
+    @Test
+    void getUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + MENU1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     // ===============================UPDATE===============================
