@@ -4,7 +4,6 @@ import com.github.Alway09.RestaurantVotingApp.MatcherFactory;
 import com.github.Alway09.RestaurantVotingApp.TestData;
 import com.github.Alway09.RestaurantVotingApp.model.Dish;
 import com.github.Alway09.RestaurantVotingApp.model.Menu;
-import com.github.Alway09.RestaurantVotingApp.to.MenuOutTo;
 import com.github.Alway09.RestaurantVotingApp.to.MenuTo;
 
 import java.time.LocalDate;
@@ -16,7 +15,6 @@ import static com.github.Alway09.RestaurantVotingApp.restaurant.RestaurantTestDa
 public class MenuTestData {
     public static final MatcherFactory.Matcher<Menu> MENU_MATCHER = MatcherFactory.usingEqualsComparator(Menu.class);
     public static final MatcherFactory.Matcher<MenuTo> MENU_TO_MATCHER = MatcherFactory.usingEqualsComparator(MenuTo.class);
-    public static final MatcherFactory.Matcher<MenuOutTo> MENU_OUT_TO_MATCHER = MatcherFactory.usingEqualsComparator(MenuOutTo.class);
 
     public static final int MENU1_ID = 1;
     public static final int MENU2_ID = 2;

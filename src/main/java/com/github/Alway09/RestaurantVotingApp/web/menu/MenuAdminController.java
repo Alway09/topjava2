@@ -62,13 +62,6 @@ public class MenuAdminController {
         return createTos(repository.getAllByActualDate(actualDate));
     }
 
-    @Operation(summary = "Get menu by id")
-    @GetMapping("/{id}")
-    public MenuTo get(@PathVariable int id) {
-        log.info("get menu id={}", id);
-        return createTo(repository.getExisted(id));
-    }
-
     @Operation(summary = "Delete menu by id")
     @CacheEvict
     @DeleteMapping("/{id}")
