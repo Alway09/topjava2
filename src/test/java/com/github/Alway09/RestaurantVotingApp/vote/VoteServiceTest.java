@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import static com.github.Alway09.RestaurantVotingApp.TestData.VOTE5;
 import static com.github.Alway09.RestaurantVotingApp.user.UserTestData.*;
-import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.*;
-import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.*;
+import static com.github.Alway09.RestaurantVotingApp.util.VoteUtil.VOTES_CACHE_NAME;
+import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.NEW_VOTE;
+import static com.github.Alway09.RestaurantVotingApp.vote.VoteTestData.USER_ALL_VOTES_AMOUNT;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -32,8 +32,8 @@ public class VoteServiceTest {
     CacheManager cacheManager;
 
     void setVotingTimes(long startDelta, long endDelta) {
-        setVotingStart(LocalTime.now().plusHours(startDelta));
-        setVotingEnd(LocalTime.now().plusHours(endDelta));
+        //setVotingStart(LocalTime.now().plusHours(startDelta));
+        //setVotingEnd(LocalTime.now().plusHours(endDelta));
     }
 
     @Order(1)

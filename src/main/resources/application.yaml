@@ -47,3 +47,4 @@ server.servlet:
     force: true
 
 springdoc.swagger-ui.path: /
+voting.end: "11:00"

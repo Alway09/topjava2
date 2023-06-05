@@ -7,6 +7,7 @@ import com.github.Alway09.RestaurantVotingApp.model.Restaurant;
 import com.github.Alway09.RestaurantVotingApp.model.User;
 import com.github.Alway09.RestaurantVotingApp.model.Vote;
 import com.github.Alway09.RestaurantVotingApp.repository.VoteRepository;
+import com.github.Alway09.RestaurantVotingApp.util.VoteUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -35,13 +36,13 @@ public class VoteService {
         Objects.requireNonNull(restaurant);
         Optional<Vote> vote = repository.findUserVote(userId, LocalDate.now());
         if(vote.isPresent()){
-            if (isVotingInProcess()) {
+            if (VoteUtil.votingTime.isVotingInProcess()) {
                 log.info("updating vote for restaurant {}, userId={}", restaurant, userId);
                 vote.get().setRestaurant(restaurant);
                 vote.get().setDate(LocalDate.now());
                 return repository.save(vote.get());
             } else {
-                throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + getActualStartAndDateTimeMessage());
+                throw new IllegalRequestDataException(VOTING_NOT_COINCIDENCE_MESSAGE + " " + VoteUtil.votingTime.getActualTimeMessage());
             }
         }
 

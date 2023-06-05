@@ -110,7 +110,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     public void update() throws Exception {
-        if(VoteUtil.isVotingInProcess()){
+        if(VoteUtil.votingTime.isVotingInProcess()){
             perform(MockMvcRequestBuilders.put(REST_URL + "vote")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(RESTAURANT1_ID)))
